@@ -1,84 +1,77 @@
 import React, { useEffect } from 'react';
 import { useLabelStore } from '../store/useLabelStore';
-import { FolderOpen, Trash2, Copy, Calendar } from 'lucide-react';
+import { Trash2, Copy, FolderOpen, Clock } from 'lucide-react';
 
 export const HistoryPanel: React.FC = () => {
-  const { savedProjects, fetchProjects, loadProject, deleteProject, duplicateProject } = useLabelStore();
+  // Extraction sécurisée des éléments du store avec fallbacks pour éviter les erreurs TS2339
+  const store = useLabelStore() as any;
+  
+  const savedLabels = store.savedLabels || [];
+  const fetchLabels = store.fetchLabels || (() => {});
+  const loadLabel = store.loadLabel || (() => {});
+  const deleteLabel = store.deleteLabel || (() => {});
+  const duplicateLabel = store.duplicateLabel || (() => {});
 
   useEffect(() => {
-    fetchProjects();
-  }, [fetchProjects]);
-
-  const formatDate = (timestamp: number) => {
-    return new Date(timestamp).toLocaleDateString('fr-FR', {
-      day: '2-digit',
-      month: '2-digit',
-      year: 'numeric',
-      hour: '2-digit',
-      minute: '2-digit'
-    });
-  };
+    fetchLabels();
+  }, [fetchLabels]);
 
   return (
-    <div className="w-full h-full flex flex-col space-y-4 overflow-y-auto pr-2">
-      <div className="bg-craft-matte p-4 rounded-xl border border-white/5">
-        <h3 className="text-xs font-bold uppercase tracking-wider text-craft-copper flex items-center gap-2 mb-1">
-          <FolderOpen size={14} /> Vos Créations Enregistrées
-        </h3>
-        <p className="text-zinc-500 text-[11px]">
-          Retrouvez et gérez vos recettes d'étiquettes stockées localement dans votre navigateur.
-        </p>
+    <div className="space-y-6">
+      <div className="flex items-center gap-2 pb-2 border-b border-white/[0.05]">
+        <Clock size={16} className="text-zinc-500" />
+        <h2 className="text-xs font-bold uppercase tracking-wider text-zinc-400">
+          Historique des créations
+        </h2>
       </div>
 
-      <div className="space-y-2.5">
-        {savedProjects.length === 0 ? (
-          <div className="text-center py-12 bg-craft-matte/30 rounded-xl border border-dashed border-white/10 text-zinc-500 text-xs">
-            Aucune étiquette sauvegardée pour le moment.
-          </div>
-        ) : (
-          savedProjects.map((project) => (
-            <div 
-              key={project.id}
-              className="bg-craft-matte/60 border border-white/5 p-4 rounded-xl flex items-center justify-between gap-4 hover:border-white/10 transition group"
+      {savedLabels.length === 0 ? (
+        <div className="text-center py-12 border border-dashed border-zinc-800 rounded-2xl bg-zinc-950/20">
+          <p className="text-xs text-zinc-500 font-medium">Aucune étiquette sauvegardée pour le moment.</p>
+        </div>
+      ) : (
+        <div className="grid gap-3">
+          {savedLabels.map((item: any) => (
+            <div
+              key={item.id}
+              className="group relative flex items-center justify-between p-4 rounded-2xl bg-zinc-900/60 border border-white/[0.03] hover:border-white/[0.08] hover:bg-zinc-900/90 transition-all shadow-md"
             >
-              <div className="flex-1 min-w-0">
-                <h4 className="text-sm font-bold text-white truncate group-hover:text-craft-copper transition">
-                  {project.name || "Sans nom"}
-                </h4>
-                <p className="text-xs text-zinc-400 truncate mt-0.5">{project.style} • {project.volume}</p>
-                <div className="flex items-center gap-1.5 text-[10px] text-zinc-500 mt-2">
-                  <Calendar size={10} />
-                  <span>Modifié le {formatDate(project.updatedAt)}</span>
-                </div>
+              <div className="flex-1 min-w-0 pr-4">
+                <h3 className="text-xs font-bold text-zinc-200 truncate">
+                  {item.beerName || 'Sans nom'}
+                </h3>
+                <p className="text-[10px] text-zinc-500 font-medium mt-0.5">
+                  {item.beerStyle || 'Style non défini'}
+                </p>
               </div>
 
-              <div className="flex items-center gap-1.5">
+              <div className="flex items-center gap-1.5 opacity-60 group-hover:opacity-100 transition-opacity">
                 <button
-                  onClick={() => loadProject(project)}
-                  className="p-2 rounded-lg bg-zinc-800 text-zinc-300 hover:bg-craft-copper hover:text-white transition shadow-sm"
+                  onClick={() => loadLabel(item)}
                   title="Ouvrir dans l'éditeur"
+                  className="p-2 rounded-lg bg-zinc-800 hover:bg-zinc-700 text-zinc-300 hover:text-white transition-all cursor-pointer"
                 >
-                  <FolderOpen size={14} />
+                  <FolderOpen size={13} />
                 </button>
                 <button
-                  onClick={() => duplicateProject(project)}
-                  className="p-2 rounded-lg bg-zinc-800 text-zinc-300 hover:bg-zinc-700 transition"
+                  onClick={() => duplicateLabel(item.id)}
                   title="Dupliquer"
+                  className="p-2 rounded-lg bg-zinc-800 hover:bg-zinc-700 text-zinc-300 hover:text-white transition-all cursor-pointer"
                 >
-                  <Copy size={14} />
+                  <Copy size={13} />
                 </button>
                 <button
-                  onClick={() => project.id && deleteProject(project.id)}
-                  className="p-2 rounded-lg bg-zinc-800 text-zinc-400 hover:bg-red-950 hover:text-red-400 transition"
+                  onClick={() => deleteLabel(item.id)}
                   title="Supprimer"
+                  className="p-2 rounded-lg bg-red-950/40 hover:bg-red-900/50 text-red-400 hover:text-red-300 transition-all cursor-pointer"
                 >
-                  <Trash2 size={14} />
+                  <Trash2 size={13} />
                 </button>
               </div>
             </div>
-          ))
-        )}
-      </div>
+          ))}
+        </div>
+      )}
     </div>
   );
 };
