@@ -3,10 +3,8 @@ import { useLabelStore } from '../store/useLabelStore';
 import { Trash2, Copy, FolderOpen, Clock } from 'lucide-react';
 
 export const HistoryPanel: React.FC = () => {
-  // Extraction avec bypass any pour éviter les blocages stricts de LabelState
   const store = useLabelStore() as any;
   
-  // Alignement sur les vrais noms de ton store : "Projects" au lieu de "Labels"
   const savedProjects = store.savedProjects || [];
   const fetchProjects = store.fetchProjects || (() => {});
   const loadProject = store.loadProject || (() => {});
