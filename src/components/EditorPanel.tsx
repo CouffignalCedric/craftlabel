@@ -1,11 +1,34 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { useLabelStore } from '../store/useLabelStore';
-import { Sparkles, Type, Hash, RotateCcw, Save, Layers } from 'lucide-react';
+// Ajout de Loader2 et Check pour animer les états du bouton
+import { Sparkles, Type, Hash, RotateCcw, Save, Layers, Loader2, Check } from 'lucide-react';
 
 export const EditorPanel: React.FC = () => {
   // On extrait l'état et la fonction directement
   const store = useLabelStore();
   const { updateLabel, resetLabel, saveToHistory } = store;
+
+  // État local pour gérer l'anti-spam du bouton Sauvegarder
+  const [saveStatus, setSaveStatus] = useState<'idle' | 'saving' | 'saved'>('idle');
+
+  // Fonction sécurisée pour empêcher les clics multiples
+  const handleSave = async () => {
+    if (saveStatus !== 'idle') return;
+
+    setSaveStatus('saving');
+    try {
+      await saveToHistory(); // Attend la sauvegarde réelle dans Dexie DB
+      setSaveStatus('saved');
+      
+      // Revient à l'état initial après 2 secondes
+      setTimeout(() => {
+        setSaveStatus('idle');
+      }, 2000);
+    } catch (error) {
+      console.error("Erreur lors de la sauvegarde :", error);
+      setSaveStatus('idle');
+    }
+  };
 
   const templates = [
     { id: 'minimal', name: 'Modern Minimal' },
@@ -39,12 +62,41 @@ export const EditorPanel: React.FC = () => {
           <RotateCcw size={13} />
           Réinitialiser
         </button>
+
+        {/* NOUVEAU BOUTON SAUVEGARDER AVEC ÉTATS VISUELS */}
         <button
-          onClick={saveToHistory}
-          className="flex items-center justify-center gap-2 px-4 py-3 rounded-xl bg-gradient-to-r from-amber-600 to-amber-500 text-zinc-950 font-bold text-xs shadow-md hover:brightness-110 transition-all cursor-pointer"
+          onClick={handleSave}
+          disabled={saveStatus !== 'idle'}
+          className={`flex items-center justify-center gap-2 px-4 py-3 rounded-xl font-bold text-xs shadow-md transition-all select-none border border-transparent
+            ${saveStatus === 'idle' 
+              ? 'bg-gradient-to-r from-amber-600 to-amber-500 text-zinc-950 hover:brightness-110 cursor-pointer' 
+              : ''}
+            ${saveStatus === 'saving' 
+              ? 'bg-zinc-800 text-zinc-500 border-white/[0.02] cursor-not-allowed' 
+              : ''}
+            ${saveStatus === 'saved' 
+              ? 'bg-gradient-to-r from-emerald-600 to-emerald-500 text-zinc-950 shadow-emerald-950/20' 
+              : ''}
+          `}
         >
-          <Save size={13} className="stroke-[2.5]" />
-          Sauvegarder
+          {saveStatus === 'idle' && (
+            <>
+              <Save size={13} className="stroke-[2.5]" />
+              <span>Sauvegarder</span>
+            </>
+          )}
+          {saveStatus === 'saving' && (
+            <>
+              <Loader2 size={13} className="animate-spin" />
+              <span>Sauvegarde...</span>
+            </>
+          )}
+          {saveStatus === 'saved' && (
+            <>
+              <Check size={13} className="stroke-[2.5] animate-bounce" />
+              <span>Enregistré !</span>
+            </>
+          )}
         </button>
       </div>
 

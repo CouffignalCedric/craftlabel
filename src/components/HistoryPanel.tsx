@@ -1,49 +1,20 @@
 import React, { useEffect } from 'react';
 import { useLabelStore } from '../store/useLabelStore';
-import { Trash2, Copy, FolderOpen, Clock } from 'lucide-react';
+import { Trash2, Clock } from 'lucide-react';
 
 export const HistoryPanel: React.FC = () => {
-  // Extraction propre des fonctions du store
+  // On ne récupère plus que le strict nécessaire (plus besoin de dupliquer)
   const { 
     savedProjects, 
     loadHistory, 
     loadProject, 
-    deleteFromHistory,
-    updateLabel,
-    saveToHistory
+    deleteFromHistory 
   } = useLabelStore();
 
   // Chargement de l'historique au montage du panneau
   useEffect(() => {
     loadHistory();
   }, [loadHistory]);
-
-  // Fonction locale pour cloner / dupliquer un projet
-  const handleDuplicate = async (project: any) => {
-    if (!project) return;
-    try {
-      updateLabel({
-        name: `${project.name} (Copie)`,
-        subtitle: project.subtitle,
-        style: project.style,
-        brewery: project.brewery,
-        abv: project.abv,
-        ibu: project.ibu,
-        ebc: project.ebc,
-        volume: project.volume,
-        description: project.description,
-        logoText: project.logoText,
-        templateId: project.templateId,
-        bgType: project.bgType,
-        primaryColor: project.primaryColor,
-        textColor: project.textColor,
-        backgroundColor: project.backgroundColor
-      });
-      await saveToHistory();
-    } catch (error) {
-      console.error("Échec de la duplication :", error);
-    }
-  };
 
   return (
     <div className="space-y-6">
@@ -63,43 +34,31 @@ export const HistoryPanel: React.FC = () => {
           {savedProjects.map((project) => (
             <div
               key={project.id}
-              className="group relative flex items-center justify-between p-4 rounded-2xl bg-zinc-900/60 border border-white/[0.03] hover:border-white/[0.08] hover:bg-zinc-900/90 transition-all shadow-md"
+              // Rend toute la carte cliquable pour charger le projet
+              onClick={() => loadProject(project)}
+              className="group relative flex items-center justify-between p-4 rounded-2xl bg-zinc-900/60 border border-white/[0.03] hover:border-amber-500/30 hover:bg-zinc-900/90 transition-all shadow-md cursor-pointer select-none"
             >
               <div className="flex-1 min-w-0 pr-4">
-                {/* Affiche correctement le nom de la bière stocké dans la DB */}
-                <h3 className="text-xs font-bold text-zinc-200 truncate">
+                {/* Le nom passe en ambre au survol de la carte pour indiquer l'action */}
+                <h3 className="text-xs font-bold text-zinc-200 group-hover:text-amber-500 transition-colors truncate">
                   {project.name || 'Sans nom'}
                 </h3>
-                {/* Affiche correctement le style de la bière stocké dans la DB */}
                 <p className="text-[10px] text-zinc-500 font-medium mt-0.5">
                   {project.style || 'Style non défini'}
                 </p>
               </div>
 
-              <div className="flex items-center gap-1.5 opacity-60 group-hover:opacity-100 transition-opacity">
-                {/* Ouvrir */}
+              {/* Bloc bouton de droite */}
+              <div className="flex items-center gap-1.5 z-10">
                 <button
-                  onClick={() => loadProject(project)}
-                  title="Ouvrir dans l'éditeur"
-                  className="p-2 rounded-lg bg-zinc-800 hover:bg-zinc-700 text-zinc-300 hover:text-white transition-all cursor-pointer"
-                >
-                  <FolderOpen size={13} />
-                </button>
-                
-                {/* Dupliquer */}
-                <button
-                  onClick={() => handleDuplicate(project)}
-                  title="Dupliquer"
-                  className="p-2 rounded-lg bg-zinc-800 hover:bg-zinc-700 text-zinc-300 hover:text-white transition-all cursor-pointer"
-                >
-                  <Copy size={13} />
-                </button>
-                
-                {/* Supprimer (Lié à la bonne action) */}
-                <button
-                  onClick={() => project.id && deleteFromHistory(project.id)}
-                  title="Supprimer"
-                  className="p-2 rounded-lg bg-red-950/40 hover:bg-red-900/50 text-red-400 hover:text-red-300 transition-all cursor-pointer"
+                  onClick={(e) => {
+                    e.stopPropagation(); // ⚠️ TRÈS IMPORTANT : Empêche l'ouverture du projet lors de la suppression
+                    if (project.id) {
+                      deleteFromHistory(project.id);
+                    }
+                  }}
+                  title="Supprimer la création"
+                  className="p-2 rounded-lg bg-red-950/40 hover:bg-red-900/60 text-red-400 hover:text-red-300 transition-all cursor-pointer"
                 >
                   <Trash2 size={13} />
                 </button>
