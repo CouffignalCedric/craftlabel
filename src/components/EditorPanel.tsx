@@ -25,6 +25,7 @@ export const EditorPanel: React.FC = () => {
     { id: 'jungle', name: '🌿 Jungle Sauvage' },
     { id: 'psychedelic', name: '🌀 Hypnotique' },
     { id: 'acid-trip', name: '🌈 Acid Néon' },
+    { id: 'cosmic', name: '🌌 Espace Cosmique' },
   ];
 
   return (

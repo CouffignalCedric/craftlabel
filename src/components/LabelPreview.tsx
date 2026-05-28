@@ -18,7 +18,7 @@ export const LabelPreview: React.FC<{ scale?: number }> = ({ scale = 1 }) => {
     backgroundColor: storeBackgroundColor 
   } = useLabelStore();
 
-  // Configuration CSS des textures d'arrière-plans
+  // Configuration CSS des textures d'arrière-plans (6 styles au total)
   const getBackgroundStyle = () => {
     switch (bgType) {
       case 'jungle':
@@ -42,6 +42,13 @@ export const LabelPreview: React.FC<{ scale?: number }> = ({ scale = 1 }) => {
           backgroundColor: '#f2e6d0',
           backgroundImage: `url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='4' height='4' viewBox='0 0 4 4'%3E%3Cpath d='M1 3h1v1H1V3zm2-2h1v1H3V1z' fill='%2378350f' fill-opacity='0.06'/%3E%3C/svg%3E")`
         };
+      case 'cosmic':
+        return {
+          backgroundColor: '#060614',
+          backgroundImage: `
+            url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='80' height='80' viewBox='0 0 80 80'%3E%3Ccircle cx='10' cy='20' r='1' fill='%23fff' fill-opacity='0.4'/%3E%3Ccircle cx='60' cy='15' r='1.3' fill='%23fff' fill-opacity='0.6'/%3E%3Ccircle cx='30' cy='50' r='0.8' fill='%23fff' fill-opacity='0.3'/%3E%3Ccircle cx='68' cy='62' r='1.1' fill='%23fff' fill-opacity='0.5'/%3E%3C/svg%3E"),
+            linear-gradient(135deg, #050512 0%, #1a0933 50%, #091c33 100%)`
+        };
       case 'dark-matte':
       default:
         return { 
@@ -50,7 +57,7 @@ export const LabelPreview: React.FC<{ scale?: number }> = ({ scale = 1 }) => {
     }
   };
 
-  // Moteur de design : Configuration dynamique des thèmes
+  // Moteur de design : Configuration dynamique des thèmes typographiques (9 styles au total)
   const getTemplateStyles = () => {
     switch (template) {
       case 'cyberpunk':
@@ -60,8 +67,8 @@ export const LabelPreview: React.FC<{ scale?: number }> = ({ scale = 1 }) => {
           subtitleClass: "font-mono tracking-tighter text-[8px] uppercase bg-cyan-500/20 px-1.5 py-0.5 mt-2 inline-block mx-auto border border-cyan-500/30 text-cyan-300 rounded-sm",
           styleClass: "font-mono text-[7px] font-black tracking-[0.2em] uppercase mt-1",
           fontFamilyClass: "font-mono",
-          defaultTextColor: "#facc15",  // Jaune Cyber par défaut
-          defaultPrimaryColor: "#f43f5e" // Rose Néon par défaut
+          defaultTextColor: "#facc15",
+          defaultPrimaryColor: "#f43f5e"
         };
       case 'wizard':
         return {
@@ -70,8 +77,8 @@ export const LabelPreview: React.FC<{ scale?: number }> = ({ scale = 1 }) => {
           subtitleClass: "font-serif text-[8px] font-light tracking-wide italic opacity-80 mt-1",
           styleClass: "font-serif text-[7px] font-medium tracking-[0.3em] uppercase mt-1.5",
           fontFamilyClass: "font-serif",
-          defaultTextColor: "#e9d5ff",  // Violet mystique clair
-          defaultPrimaryColor: "#c084fc" // Aura magique
+          defaultTextColor: "#e9d5ff",
+          defaultPrimaryColor: "#c084fc"
         };
       case 'comic':
         return {
@@ -80,8 +87,8 @@ export const LabelPreview: React.FC<{ scale?: number }> = ({ scale = 1 }) => {
           subtitleClass: "font-sans tracking-tight text-[9px] font-black uppercase mt-2 text-zinc-950 bg-white border-2 border-black rounded-md px-1.5 py-0.5 inline-block shadow-[2px_2px_0px_rgba(0,0,0,1)] transform rotate-1",
           styleClass: "font-sans text-[8px] font-black tracking-wider uppercase mt-1.5 border-2 border-black px-1.5 rounded-sm inline-block shadow-[1.5px_1.5px_0px_rgba(0,0,0,1)] bg-amber-500 text-black",
           fontFamilyClass: "font-sans",
-          defaultTextColor: "#ffffff",   // Blanc pur de BD
-          defaultPrimaryColor: "#ef4444" // Rouge d'alerte comics
+          defaultTextColor: "#ffffff",
+          defaultPrimaryColor: "#ef4444"
         };
       case 'minimal':
         return {
@@ -149,7 +156,7 @@ export const LabelPreview: React.FC<{ scale?: number }> = ({ scale = 1 }) => {
       style={{ 
         transform: `scale(${scale})`, 
         transformOrigin: 'center',
-        borderColor: template === 'comic' ? '#000000' : activeBorderColor, // Bordure noire fixe en mode Comic BD
+        borderColor: template === 'comic' ? '#000000' : activeBorderColor, // Bordure noire massive pour le thème BD
         ...getBackgroundStyle()
       }}
     >
@@ -172,7 +179,7 @@ export const LabelPreview: React.FC<{ scale?: number }> = ({ scale = 1 }) => {
           {name || 'Hop Horizon'}
         </h2>
         
-        {/* Ligne séparatrice filtrée sur les thèmes épurés / déstructurés */}
+        {/* Ligne séparatrice (filtrée pour ne pas casser les designs destructurés ou épurés) */}
         {template !== 'minimal' && template !== 'punk' && template !== 'cyberpunk' && template !== 'comic' && (
           <div 
             className="w-8 h-[1px] mx-auto my-2"
@@ -180,7 +187,7 @@ export const LabelPreview: React.FC<{ scale?: number }> = ({ scale = 1 }) => {
           ></div>
         )}
         
-        {/* Sous-titre */}
+        {/* Sous-titre / Slogan */}
         <p className={tplStyle.subtitleClass} style={{ color: template === 'comic' ? undefined : activeTextColor }}>
           {subtitle || 'Double IPA Artisanale'}
         </p>
