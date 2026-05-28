@@ -14,6 +14,9 @@ export const EditorPanel: React.FC = () => {
     { id: 'industrial', name: 'Industrial Beer' },
     { id: 'retro', name: 'Retro Americana' },
     { id: 'dark', name: 'Black Gold Premium' },
+    { id: 'cyberpunk', name: '⚡ Cyber Neon' },
+    { id: 'wizard', name: '🔮 Grimoire Secret' },
+    { id: 'comic', name: '💥 Pop Cartoon' },
   ];
 
   const backgrounds = [

@@ -2,7 +2,7 @@ import React from 'react';
 import { useLabelStore } from '../store/useLabelStore';
 
 export const LabelPreview: React.FC<{ scale?: number }> = ({ scale = 1 }) => {
-  // Extraction de TOUTES les variables nécessaires, y compris template
+  // Extraction de TOUTES les variables du store
   const { 
     name, 
     subtitle, 
@@ -12,7 +12,7 @@ export const LabelPreview: React.FC<{ scale?: number }> = ({ scale = 1 }) => {
     ibu, 
     volume, 
     bgType,
-    template, // <-- On récupère le template sélectionné !
+    template,
     primaryColor, 
     textColor: storeTextColor, 
     backgroundColor: storeBackgroundColor 
@@ -50,9 +50,39 @@ export const LabelPreview: React.FC<{ scale?: number }> = ({ scale = 1 }) => {
     }
   };
 
-  // Moteur de design : Configuration dynamique de la typographie selon le template
+  // Moteur de design : Configuration dynamique des thèmes
   const getTemplateStyles = () => {
     switch (template) {
+      case 'cyberpunk':
+        return {
+          breweryClass: "font-mono tracking-[0.3em] text-[6px] uppercase opacity-90 text-cyan-400",
+          nameClass: "font-mono font-black tracking-wide text-2xl uppercase mt-2.5 transform skew-x-12 leading-none [text-shadow:2px_2px_0px_#f43f5e]",
+          subtitleClass: "font-mono tracking-tighter text-[8px] uppercase bg-cyan-500/20 px-1.5 py-0.5 mt-2 inline-block mx-auto border border-cyan-500/30 text-cyan-300 rounded-sm",
+          styleClass: "font-mono text-[7px] font-black tracking-[0.2em] uppercase mt-1",
+          fontFamilyClass: "font-mono",
+          defaultTextColor: "#facc15",  // Jaune Cyber par défaut
+          defaultPrimaryColor: "#f43f5e" // Rose Néon par défaut
+        };
+      case 'wizard':
+        return {
+          breweryClass: "font-serif tracking-[0.5em] text-[6px] uppercase opacity-70",
+          nameClass: "font-serif font-light tracking-widest text-2xl mt-2 leading-tight italic [text-shadow:0_0_10px_rgba(168,85,247,0.5)]",
+          subtitleClass: "font-serif text-[8px] font-light tracking-wide italic opacity-80 mt-1",
+          styleClass: "font-serif text-[7px] font-medium tracking-[0.3em] uppercase mt-1.5",
+          fontFamilyClass: "font-serif",
+          defaultTextColor: "#e9d5ff",  // Violet mystique clair
+          defaultPrimaryColor: "#c084fc" // Aura magique
+        };
+      case 'comic':
+        return {
+          breweryClass: "font-sans tracking-wide text-[8px] font-black uppercase text-amber-400 transform rotate-2",
+          nameClass: "font-sans font-black tracking-tight text-[26px] uppercase mt-1.5 leading-none transform -rotate-3 [text-shadow:2px_2px_0px_#000,-1px_-1px_0px_#000,1px_-1px_0px_#000,-1px_1px_0px_#000,1px_1px_0px_#000]",
+          subtitleClass: "font-sans tracking-tight text-[9px] font-black uppercase mt-2 text-zinc-950 bg-white border-2 border-black rounded-md px-1.5 py-0.5 inline-block shadow-[2px_2px_0px_rgba(0,0,0,1)] transform rotate-1",
+          styleClass: "font-sans text-[8px] font-black tracking-wider uppercase mt-1.5 border-2 border-black px-1.5 rounded-sm inline-block shadow-[1.5px_1.5px_0px_rgba(0,0,0,1)] bg-amber-500 text-black",
+          fontFamilyClass: "font-sans",
+          defaultTextColor: "#ffffff",   // Blanc pur de BD
+          defaultPrimaryColor: "#ef4444" // Rouge d'alerte comics
+        };
       case 'minimal':
         return {
           breweryClass: "font-sans tracking-[0.5em] text-[6px] font-light uppercase opacity-60",
@@ -106,12 +136,12 @@ export const LabelPreview: React.FC<{ scale?: number }> = ({ scale = 1 }) => {
   };
 
   const isLight = bgType === 'vintage-paper';
-  const activeTextColor = storeTextColor || (isLight ? '#1c1917' : '#f4f4f5');
-  const activePrimaryColor = primaryColor || '#d97706';
-  const activeBorderColor = primaryColor || (isLight ? '#1c1917' : '#d97706');
-
-  // Récupération des classes spécifiques au thème actif
   const tplStyle = getTemplateStyles();
+
+  // Fusion intelligente des couleurs personnalisées ou thématiques
+  const activeTextColor = storeTextColor || tplStyle.defaultTextColor || (isLight ? '#1c1917' : '#f4f4f5');
+  const activePrimaryColor = primaryColor || tplStyle.defaultPrimaryColor || '#d97706';
+  const activeBorderColor = primaryColor || tplStyle.defaultPrimaryColor || (isLight ? '#1c1917' : '#d97706');
 
   return (
     <div 
@@ -119,7 +149,7 @@ export const LabelPreview: React.FC<{ scale?: number }> = ({ scale = 1 }) => {
       style={{ 
         transform: `scale(${scale})`, 
         transformOrigin: 'center',
-        borderColor: activeBorderColor,
+        borderColor: template === 'comic' ? '#000000' : activeBorderColor, // Bordure noire fixe en mode Comic BD
         ...getBackgroundStyle()
       }}
     >
@@ -131,19 +161,19 @@ export const LabelPreview: React.FC<{ scale?: number }> = ({ scale = 1 }) => {
 
       <div className="text-center mt-1 z-10 select-none flex flex-col justify-center">
         {/* Nom de la brasserie */}
-        <p className={tplStyle.breweryClass} style={{ color: activeTextColor }}>
-          {template === 'punk' ? '' : '✦ '}
+        <p className={tplStyle.breweryClass} style={{ color: template === 'comic' ? undefined : activeTextColor }}>
+          {template !== 'minimal' && template !== 'punk' && template !== 'cyberpunk' && template !== 'comic' && '✦ '}
           {brewery || 'Brasserie du Sommet'}
-          {template === 'punk' ? '' : ' ✦'}
+          {template !== 'minimal' && template !== 'punk' && template !== 'cyberpunk' && template !== 'comic' && ' ✦'}
         </p>
         
         {/* Nom de la bière */}
-        <h2 className={tplStyle.nameClass} style={{ color: activeTextColor }}>
+        <h2 className={tplStyle.nameClass} style={{ color: template === 'comic' ? undefined : activeTextColor }}>
           {name || 'Hop Horizon'}
         </h2>
         
-        {/* Ligne séparatrice (masquée sur le design Minimal et Punk pour épurer) */}
-        {template !== 'minimal' && template !== 'punk' && (
+        {/* Ligne séparatrice filtrée sur les thèmes épurés / déstructurés */}
+        {template !== 'minimal' && template !== 'punk' && template !== 'cyberpunk' && template !== 'comic' && (
           <div 
             className="w-8 h-[1px] mx-auto my-2"
             style={{ backgroundColor: activeTextColor, opacity: 0.2 }}
@@ -151,22 +181,22 @@ export const LabelPreview: React.FC<{ scale?: number }> = ({ scale = 1 }) => {
         )}
         
         {/* Sous-titre */}
-        <p className={tplStyle.subtitleClass} style={{ color: activeTextColor }}>
+        <p className={tplStyle.subtitleClass} style={{ color: template === 'comic' ? undefined : activeTextColor }}>
           {subtitle || 'Double IPA Artisanale'}
         </p>
         
-        {/* Style de bière (ex: Imperial IPA) */}
-        <p className={tplStyle.styleClass} style={{ color: activePrimaryColor }}>
+        {/* Style de bière */}
+        <p className={tplStyle.styleClass} style={{ color: template === 'comic' ? undefined : activePrimaryColor }}>
           {style || 'Imperial IPA'}
         </p>
       </div>
 
       {/* Grille des caractéristiques techniques du bas */}
       <div 
-        className="grid grid-cols-3 text-center border-t pt-2 z-10" 
+        className={`grid grid-cols-3 text-center border-t pt-2 z-10 ${template === 'comic' ? 'border-black border-t-2 font-black' : ''}`} 
         style={{ 
-          borderColor: isLight ? 'rgba(0,0,0,0.1)' : 'rgba(255,255,255,0.1)',
-          color: activeTextColor 
+          borderColor: template === 'comic' ? '#000000' : (isLight ? 'rgba(0,0,0,0.1)' : 'rgba(255,255,255,0.1)'),
+          color: template === 'comic' ? '#000000' : activeTextColor 
         }}
       >
         <div>
