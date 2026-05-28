@@ -3,17 +3,49 @@ import { useLabelStore } from '../store/useLabelStore';
 import { Trash2, Copy, FolderOpen, Clock } from 'lucide-react';
 
 export const HistoryPanel: React.FC = () => {
-  const store = useLabelStore() as any;
-  
-  const savedProjects = store.savedProjects || [];
-  const fetchProjects = store.fetchProjects || (() => {});
-  const loadProject = store.loadProject || (() => {});
-  const deleteProject = store.deleteProject || (() => {});
-  const duplicateProject = store.duplicateProject || (() => {});
+  // On extrait les vraies fonctions typées de ton store (plus besoin de "as any")
+  const { 
+    savedProjects, 
+    loadHistory, 
+    loadProject, 
+    deleteFromHistory,
+    updateLabel,
+    saveToHistory
+  } = useLabelStore();
 
+  // Charge l'historique de la base de données Dexie au montage du composant
   useEffect(() => {
-    fetchProjects();
-  }, [fetchProjects]);
+    loadHistory();
+  }, [loadHistory]);
+
+  // Petite fonction locale pour gérer la duplication (vu qu'elle n'est pas dans ton store)
+  const handleDuplicate = async (project: any) => {
+    if (!project) return;
+    try {
+      // 1. On injecte les données du projet dans l'éditeur
+      updateLabel({
+        name: `${project.name} (Copie)`,
+        subtitle: project.subtitle,
+        style: project.style,
+        brewery: project.brewery,
+        abv: project.abv,
+        ibu: project.ibu,
+        ebc: project.ebc,
+        volume: project.volume,
+        description: project.description,
+        logoText: project.logoText,
+        templateId: project.templateId,
+        bgType: project.bgType,
+        primaryColor: project.primaryColor,
+        textColor: project.textColor,
+        backgroundColor: project.backgroundColor
+      });
+      // 2. On déclenche la sauvegarde dans Dexie
+      await saveToHistory();
+    } catch (error) {
+      console.error("Échec de la duplication :", error);
+    }
+  };
 
   return (
     <div className="space-y-6">
@@ -30,17 +62,19 @@ export const HistoryPanel: React.FC = () => {
         </div>
       ) : (
         <div className="grid gap-3">
-          {savedProjects.map((project: any) => (
+          {savedProjects.map((project) => (
             <div
               key={project.id}
               className="group relative flex items-center justify-between p-4 rounded-2xl bg-zinc-900/60 border border-white/[0.03] hover:border-white/[0.08] hover:bg-zinc-900/90 transition-all shadow-md"
             >
               <div className="flex-1 min-w-0 pr-4">
+                {/* Correction ici : project.name au lieu de project.beerName */}
                 <h3 className="text-xs font-bold text-zinc-200 truncate">
-                  {project.beerName || 'Sans nom'}
+                  {project.name || 'Sans nom'}
                 </h3>
+                {/* Correction ici : project.style au lieu de project.beerStyle */}
                 <p className="text-[10px] text-zinc-500 font-medium mt-0.5">
-                  {project.beerStyle || 'Style non défini'}
+                  {project.style || 'Style non défini'}
                 </p>
               </div>
 
@@ -52,15 +86,18 @@ export const HistoryPanel: React.FC = () => {
                 >
                   <FolderOpen size={13} />
                 </button>
+                
                 <button
-                  onClick={() => duplicateProject(project.id)}
+                  onClick={() => handleDuplicate(project)}
                   title="Dupliquer"
                   className="p-2 rounded-lg bg-zinc-800 hover:bg-zinc-700 text-zinc-300 hover:text-white transition-all cursor-pointer"
                 >
                   <Copy size={13} />
                 </button>
+                
                 <button
-                  onClick={() => deleteProject(project.id)}
+                  {/* Correction ici : deleteFromHistory au lieu de deleteProject */}
+                  onClick={() => project.id && deleteFromHistory(project.id)}
                   title="Supprimer"
                   className="p-2 rounded-lg bg-red-950/40 hover:bg-red-900/50 text-red-400 hover:text-red-300 transition-all cursor-pointer"
                 >
