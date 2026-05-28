@@ -6,10 +6,10 @@ export interface LabelState {
   activeTab: 'edit' | 'history' | 'print';
   setActiveTab: (tab: 'edit' | 'history' | 'print') => void;
 
-  // Données de l'étiquette (parfaitement alignées avec Dexie DB)
+  // Données de l'étiquette
   name: string;
   subtitle: string;
-  style: string; // Style de la bière (ex: Imperial IPA)
+  style: string;
   brewery: string;
   abv: string;
   ibu: string;
@@ -17,16 +17,16 @@ export interface LabelState {
   volume: string;
   description: string;
   logoText: string;
-  template: string;   // Pour la rétrocompatibilité
-  templateId: string; // Aligné avec le champ de la BDD
+  template: string;   
+  templateId: string; 
   bgType: string;
 
-  // Styles visuels & Couleurs (Pour faire fonctionner tes boutons Style)
+  // Styles visuels & Couleurs
   primaryColor: string;
   textColor: string;
   backgroundColor: string;
 
-  // Historique des projets (Répare l'erreur TS sur Vercel & gère l'affichage)
+  // Historique des projets
   savedProjects: LabelProject[];
   loadHistory: () => Promise<void>;
   deleteFromHistory: (id: number) => Promise<void>;
@@ -42,7 +42,7 @@ export const useLabelStore = create<LabelState>((set, get) => ({
   activeTab: 'edit',
   setActiveTab: (tab) => set({ activeTab: tab }),
 
-  // Valeurs par défaut initiales complètes
+  // Valeurs par défaut initiales
   name: 'Hop Horizon',
   subtitle: 'Double IPA Artisanale',
   style: 'Imperial IPA',
@@ -57,15 +57,14 @@ export const useLabelStore = create<LabelState>((set, get) => ({
   templateId: 'dark',
   bgType: 'dark-matte',
   
-  // Couleurs de style par défaut
-  primaryColor: '#D97706',    // Cuivre / Ambre (craft-copper)
-  textColor: '#F5F5F0',       // Crème (craft-cream)
-  backgroundColor: '#0B0B0B', // Noir mat (craft-dark)
+  primaryColor: '#D97706',    
+  textColor: '#F5F5F0',       
+  backgroundColor: '#0B0B0B', 
 
   // Liste locale des projets pour l'historique
   savedProjects: [],
 
-  // ACTION : Charger l'historique depuis Dexie au démarrage du composant historique
+  // ACTION : Charger l'historique depuis Dexie
   loadHistory: async () => {
     try {
       const projects = await db.projects.toArray();
@@ -75,16 +74,19 @@ export const useLabelStore = create<LabelState>((set, get) => ({
     }
   },
 
-  // ACTION : Supprimer un projet de l'historique
-  deleteFromHistory: async (id) => {
-    if (!id) return;
+  // ACTION : Supprimer un projet de l'historique (Sécurisée et synchronisée)
+  deleteFromHistory: async (id: number) => {
+    if (id === undefined || id === null) {
+      console.warn("L'ID du projet est manquant.");
+      return;
+    }
     try {
       await db.projects.delete(id);
-      // Rafraîchir instantanément la liste du store
+      // Rafraîchir instantanément la liste du store après suppression
       const projects = await db.projects.toArray();
       set({ savedProjects: projects });
     } catch (error) {
-      console.error("Erreur lors de la suppression :", error);
+      console.error("Erreur lors de la suppression dans le Store :", error);
     }
   },
 
@@ -109,7 +111,7 @@ export const useLabelStore = create<LabelState>((set, get) => ({
     backgroundColor: '#0B0B0B',
   }),
 
-  // ACTION : ENREGISTREMENT RÉEL DANS LA BASE DE DONNÉES LOCALHOST (DEXIE)
+  // ACTION : Enregistrement dans Dexie DB
   saveToHistory: async () => {
     const state = get();
     
@@ -132,16 +134,13 @@ export const useLabelStore = create<LabelState>((set, get) => ({
 
     try {
       await db.projects.add(newProject);
-      console.log('Sauvegardé avec succès dans Dexie !');
-      
-      // Rafraîchir la liste de l'historique pour l'interface utilisateur
-      await state.loadHistory();
+      await state.loadHistory(); // Met à jour l'UI instantanément
     } catch (error) {
       console.error('Erreur lors de la sauvegarde dans Dexie :', error);
     }
   },
 
-  // ACTION : Charger un ancien projet depuis l'historique directement dans l'éditeur
+  // ACTION : Charger un projet dans l'éditeur
   loadProject: (project) => set({
     name: project.name,
     subtitle: project.subtitle,
@@ -157,6 +156,6 @@ export const useLabelStore = create<LabelState>((set, get) => ({
     primaryColor: project.primaryColor || '#D97706',
     textColor: project.textColor || '#F5F5F0',
     backgroundColor: project.backgroundColor || '#0B0B0B',
-    activeTab: 'edit' // Redirige automatiquement vers l'éditeur
+    activeTab: 'edit' 
   })
 }));
