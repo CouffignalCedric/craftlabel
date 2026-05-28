@@ -1,8 +1,7 @@
 import { create } from 'zustand';
-import { db, type LabelProject } from '../db'; // Ajuste le chemin vers ton fichier db si nécessaire
+import { db, type LabelProject } from '../db'; // Ajuste le chemin si nécessaire
 
 export interface LabelState {
-  // Onglet actif de l'interface
   activeTab: 'edit' | 'history' | 'print';
   setActiveTab: (tab: 'edit' | 'history' | 'print') => void;
 
@@ -26,12 +25,11 @@ export interface LabelState {
   textColor: string;
   backgroundColor: string;
 
-  // Historique des projets
+  // Historique
   savedProjects: LabelProject[];
   loadHistory: () => Promise<void>;
   deleteFromHistory: (id: number) => Promise<void>;
 
-  // Fonctions de mise à jour et actions
   updateLabel: (fields: Partial<Omit<LabelState, 'activeTab' | 'setActiveTab' | 'updateLabel' | 'resetLabel' | 'saveToHistory' | 'loadHistory' | 'deleteFromHistory' | 'savedProjects'>>) => void;
   resetLabel: () => void;
   saveToHistory: () => Promise<void>;
@@ -42,7 +40,7 @@ export const useLabelStore = create<LabelState>((set, get) => ({
   activeTab: 'edit',
   setActiveTab: (tab) => set({ activeTab: tab }),
 
-  // Valeurs par défaut initiales
+  // Valeurs par défaut
   name: 'Hop Horizon',
   subtitle: 'Double IPA Artisanale',
   style: 'Imperial IPA',
@@ -61,10 +59,8 @@ export const useLabelStore = create<LabelState>((set, get) => ({
   textColor: '#F5F5F0',       
   backgroundColor: '#0B0B0B', 
 
-  // Liste locale des projets pour l'historique
   savedProjects: [],
 
-  // ACTION : Charger l'historique depuis Dexie
   loadHistory: async () => {
     try {
       const projects = await db.projects.toArray();
@@ -74,19 +70,14 @@ export const useLabelStore = create<LabelState>((set, get) => ({
     }
   },
 
-  // ACTION : Supprimer un projet de l'historique (Sécurisée et synchronisée)
   deleteFromHistory: async (id: number) => {
-    if (id === undefined || id === null) {
-      console.warn("L'ID du projet est manquant.");
-      return;
-    }
+    if (id === undefined || id === null) return;
     try {
       await db.projects.delete(id);
-      // Rafraîchir instantanément la liste du store après suppression
       const projects = await db.projects.toArray();
       set({ savedProjects: projects });
     } catch (error) {
-      console.error("Erreur lors de la suppression dans le Store :", error);
+      console.error("Erreur lors de la suppression :", error);
     }
   },
 
@@ -111,7 +102,7 @@ export const useLabelStore = create<LabelState>((set, get) => ({
     backgroundColor: '#0B0B0B',
   }),
 
-  // ACTION : Enregistrement dans Dexie DB
+  // CORRECTION ICI : Enregistrement rigoureux de tous les champs
   saveToHistory: async () => {
     const state = get();
     
@@ -119,13 +110,15 @@ export const useLabelStore = create<LabelState>((set, get) => ({
       name: state.name,
       subtitle: state.subtitle,
       style: state.style,
+      brewery: state.brewery,       // Ajouté (manquait à l'appel)
       abv: state.abv,
       ibu: state.ibu,
       ebc: state.ebc,
       volume: state.volume,
       description: state.description,
       logoText: state.logoText,
-      templateId: state.templateId || state.template,
+      templateId: state.template,   // FIX : On prend directement le template sélectionné à l'écran
+      bgType: state.bgType,         // Ajouté (manquait à l'appel)
       primaryColor: state.primaryColor,
       textColor: state.textColor,
       backgroundColor: state.backgroundColor,
@@ -134,25 +127,27 @@ export const useLabelStore = create<LabelState>((set, get) => ({
 
     try {
       await db.projects.add(newProject);
-      await state.loadHistory(); // Met à jour l'UI instantanément
+      await state.loadHistory(); 
     } catch (error) {
       console.error('Erreur lors de la sauvegarde dans Dexie :', error);
     }
   },
 
-  // ACTION : Charger un projet dans l'éditeur
+  // CORRECTION ICI : Restauration complète du projet cliqué
   loadProject: (project) => set({
     name: project.name,
     subtitle: project.subtitle,
     style: project.style,
+    brewery: project.brewery || '',
     abv: project.abv,
     ibu: project.ibu,
     ebc: project.ebc || '',
     volume: project.volume,
     description: project.description || '',
     logoText: project.logoText || '',
-    template: project.templateId,
-    templateId: project.templateId,
+    template: project.templateId,   // Synchronise le template visuel
+    templateId: project.templateId, // Synchronise l'ID interne
+    bgType: project.bgType || 'dark-matte',
     primaryColor: project.primaryColor || '#D97706',
     textColor: project.textColor || '#F5F5F0',
     backgroundColor: project.backgroundColor || '#0B0B0B',

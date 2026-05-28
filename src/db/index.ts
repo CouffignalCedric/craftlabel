@@ -5,6 +5,7 @@ export interface LabelProject {
   name: string;
   subtitle: string;
   style: string;
+  brewery?: string;
   abv: string;
   ibu: string;
   ebc: string;
@@ -12,6 +13,7 @@ export interface LabelProject {
   description: string;
   logoText: string;
   templateId: string;
+  bgType?: string;
   primaryColor: string;
   textColor: string;
   backgroundColor: string;
