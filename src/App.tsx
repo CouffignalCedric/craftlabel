@@ -25,8 +25,7 @@ const App: React.FC = () => {
     }
   };
 
-  // CIRCUIT COURT : Si on est en mode impression, on n'affiche QUE la vue d'impression.
-  // Cela empêche l'application sombre de se superposer en arrière-plan et de figer l'écran.
+  // CIRCUIT COURT : Mode impression direct
   if (activeTab === 'print') {
     return <PrintView />;
   }
@@ -43,28 +42,20 @@ const App: React.FC = () => {
       {/* Layout principal asymétrique */}
       <main className="flex-1 w-full max-w-7xl mx-auto p-4 md:p-6 lg:p-8 grid grid-cols-1 lg:grid-cols-12 gap-6 lg:gap-8 items-start relative">
         
-        {/* PANNEAU DE CONTRÔLE (Gauche) */}
-        <div className="lg:col-span-5 w-full bg-zinc-900/40 backdrop-blur-3xl border border-white/[0.05] rounded-3xl h-[calc(100vh-140px)] min-h-[500px] overflow-hidden shadow-2xl shadow-black/80 flex flex-col relative">
-          <div className="absolute -top-1/2 -left-1/2 w-full h-full bg-[radial-gradient(ellipse_at_center,rgba(255,255,255,0.01)_0%,rgba(0,0,0,0)_60%)] pointer-events-none"></div>
-          <div className="flex-1 overflow-y-auto p-4 md:p-6 relative">
-            {activeTab === 'edit' ? <EditorPanel /> : <HistoryPanel />}
-          </div>
-        </div>
-        
-        {/* ZONE DE PREVIEW (Droite) */}
-        <div className="lg:col-span-7 w-full h-[calc(100vh-140px)] min-h-[400px] flex flex-col items-center justify-center bg-zinc-950/20 rounded-3xl border border-white/[0.03] p-6 lg:p-12 relative overflow-hidden bg-[radial-gradient(#161618_1px,transparent_1px)] [background-size:20px_20px]">
+        {/* 📱 ZONE DE PREVIEW (Désormais en haut sur mobile grâce à order-1) */}
+        <div className="order-1 lg:order-2 lg:col-span-7 w-full h-auto lg:h-[calc(100vh-140px)] min-h-0 lg:min-h-[400px] flex flex-col items-center justify-center bg-zinc-950/20 rounded-3xl border border-white/[0.03] p-4 lg:p-12 relative overflow-hidden bg-[radial-gradient(#161618_1px,transparent_1px)] [background-size:20px_20px]">
            
            {/* Marques de visée esthétiques */}
-           <div className="absolute top-4 left-4 text-[9px] font-mono text-zinc-700 select-none tracking-widest">_LAB_RENDER_v4.2</div>
-           <div className="absolute bottom-4 right-4 text-[9px] font-mono text-zinc-700 select-none tracking-widest">GRID_ACTIVE</div>
+           <div className="absolute top-4 left-4 text-[9px] font-mono text-zinc-700 select-none tracking-widest hidden sm:block">_LAB_RENDER_v4.2</div>
+           <div className="absolute bottom-4 right-4 text-[9px] font-mono text-zinc-700 select-none tracking-widest hidden sm:block">GRID_ACTIVE</div>
 
-           <div className="relative transform scale-100 md:scale-105 lg:scale-120 transition-transform duration-300">
+           <div className="relative transform scale-100 md:scale-105 lg:scale-120 transition-transform duration-300 w-full flex justify-center">
               {/* Lueurs floues adaptatives */}
               <div className="absolute -inset-10 bg-black/40 rounded-full blur-3xl pointer-events-none"></div>
               <div className={`absolute -inset-4 bg-gradient-to-br ${getDynamicGlow()} rounded-full blur-2xl opacity-80 transition-all duration-700 pointer-events-none`}></div>
               
               {/* Le cadre de l'étiquette */}
-              <div className={`relative p-1.5 rounded-xl shadow-[0_30px_70px_-15px_rgba(0,0,0,0.9)] border transition-all duration-500 ${
+              <div className={`relative p-1.5 rounded-xl shadow-[0_30px_70px_-15px_rgba(0,0,0,0.9)] border transition-all duration-500 w-full max-w-xs sm:max-w-none ${
                 bgType === 'vintage-paper' 
                   ? 'bg-amber-950/20 border-amber-800/20' 
                   : 'bg-zinc-900/90 border-white/10 ring-1 ring-black/50'
@@ -73,10 +64,19 @@ const App: React.FC = () => {
               </div>
            </div>
 
-           <p className="text-center text-[9px] text-zinc-600 font-bold uppercase tracking-[0.35em] mt-12 select-none">
+           <p className="text-center text-[9px] text-zinc-600 font-bold uppercase tracking-[0.35em] mt-4 lg:mt-12 select-none hidden sm:block">
              Rendu de production haute fidélité
            </p>
         </div>
+
+        {/* ⚙️ PANNEAU DE CONTRÔLE (Placé en dessous sur mobile grâce à order-2, hauteur fluide h-auto) */}
+        <div className="order-2 lg:order-1 lg:col-span-5 w-full bg-zinc-900/40 backdrop-blur-3xl border border-white/[0.05] rounded-3xl h-auto lg:h-[calc(100vh-140px)] min-h-0 lg:min-h-[500px] overflow-hidden shadow-2xl shadow-black/80 flex flex-col relative">
+          <div className="absolute -top-1/2 -left-1/2 w-full h-full bg-[radial-gradient(ellipse_at_center,rgba(255,255,255,0.01)_0%,rgba(0,0,0,0)_60%)] pointer-events-none"></div>
+          <div className="flex-1 overflow-y-auto p-4 md:p-6 relative">
+            {activeTab === 'edit' ? <EditorPanel /> : <HistoryPanel />}
+          </div>
+        </div>
+
       </main>
     </div>
   );
