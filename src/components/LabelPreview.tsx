@@ -29,22 +29,27 @@ const PopCartoonTemplate: React.FC<{ store: any }> = ({ store }) => (
     <div className="text-[10px] font-black uppercase tracking-widest text-[#FF9F00] mt-1 select-none">
       {store.brewery || "BRASSERIE DU SOMMET"}
     </div>
-    <div className="my-1 transform -rotate-1 max-w-full px-2 overflow-hidden">
-      <h1 className="text-3xl font-black uppercase tracking-tight text-white select-none text-center break-words" style={{ textShadow: '2px 2px 0 #000, -2px -2px 0 #000, 2px -2px 0 #000, -2px 2px 0 #000, 3px 3px 0 #000' }}>
+
+    {/* Titre penché */}
+    <div className="my-1 transform -rotate-10 max-w-full px-2 overflow-hidden">
+      <h1 className="text-3xl font-black uppercase tracking-tight text-white select-none text-center break-words"
+        style={{ textShadow: '2px 2px 0 #000, -2px -2px 0 #000, 2px -2px 0 #000, -2px 2px 0 #000, 3px 3px 0 #000' }}>
         {store.name || "HOP HORIZON"}
       </h1>
     </div>
+
     <div className="w-full space-y-1.5 px-3 mb-1">
-      <div className="w-full bg-white text-black font-black uppercase text-[10px] py-1 px-2 border-2 border-black rounded-lg shadow-[2px_2px_0px_rgba(0,0,0,1)] text-center tracking-wide truncate">
+      {/* Badge 1 penché à gauche */}
+      <div className="transform -rotate-1 w-full bg-white text-black font-black uppercase text-[10px] py-1 px-2 border-2 border-black rounded-lg shadow-[3px_3px_0px_rgba(0,0,0,1)] text-center tracking-wide truncate">
         {store.subtitle || "DOUBLE IPA ARTISANALE"}
       </div>
-      <div className="w-full bg-[#FF9F00] text-black font-black uppercase text-[10px] py-1 px-2 border-2 border-black rounded-lg shadow-[2px_2px_0px_rgba(0,0,0,1)] text-center tracking-wide truncate">
+      {/* Badge 2 penché à droite */}
+      <div className="transform rotate-1 w-full bg-[#FF9F00] text-black font-black uppercase text-[10px] py-1 px-2 border-2 border-black rounded-lg shadow-[3px_3px_0px_rgba(0,0,0,1)] text-center tracking-wide truncate">
         {store.style || "IMPERIAL IPA"}
       </div>
     </div>
   </div>
 );
-
 const BrewdogSlashedTemplate: React.FC<{ store: any }> = ({ store }) => (
   <div className="w-full h-full flex items-center justify-between text-left font-sans relative overflow-hidden text-black">
     <div className="max-w-[70%] pl-2 flex flex-col justify-center h-full space-y-1">
