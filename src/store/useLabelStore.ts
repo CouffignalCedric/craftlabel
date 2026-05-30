@@ -19,6 +19,7 @@ export interface LabelState {
   template: string;   
   templateId: string; 
   bgType: string;
+  backgroundId: string; // <-- AJOUTÉ : Pour piloter les 20 fonds clairs/flashy
 
   // Styles visuels & Couleurs
   primaryColor: string;
@@ -40,7 +41,7 @@ export const useLabelStore = create<LabelState>((set, get) => ({
   activeTab: 'edit',
   setActiveTab: (tab) => set({ activeTab: tab }),
 
-  // Valeurs par défaut
+  // Valeurs par défaut (Ajustées sur ton style favori !)
   name: 'Hop Horizon',
   subtitle: 'Double IPA Artisanale',
   style: 'Imperial IPA',
@@ -51,13 +52,14 @@ export const useLabelStore = create<LabelState>((set, get) => ({
   volume: '33 cl',
   description: 'Une bière artisanale explosive en saveurs et en amertume.',
   logoText: 'H',
-  template: 'dark',
-  templateId: 'dark',
-  bgType: 'dark-matte',
-  
+  template: 'comic',      // <-- FIX : 'comic' par défaut au lieu de 'dark'
+  templateId: 'comic',    // <-- FIX : 'comic' par défaut au lieu de 'dark'
+  bgType: 'light-flashy',
+  backgroundId: 'comic-cream', // <-- AJOUTÉ : Fond de départ
+
   primaryColor: '#D97706',    
-  textColor: '#F5F5F0',       
-  backgroundColor: '#0B0B0B', 
+  textColor: '#000000',       
+  backgroundColor: '#EFEAD8', 
 
   savedProjects: [],
 
@@ -94,31 +96,33 @@ export const useLabelStore = create<LabelState>((set, get) => ({
     volume: '33 cl',
     description: 'Une bière artisanale explosive en saveurs et en amertume.',
     logoText: 'H',
-    template: 'dark',
-    templateId: 'dark',
-    bgType: 'dark-matte',
+    template: 'comic',
+    templateId: 'comic',
+    bgType: 'light-flashy',
+    backgroundId: 'comic-cream', // <-- AJOUTÉ
     primaryColor: '#D97706',
-    textColor: '#F5F5F0',
-    backgroundColor: '#0B0B0B',
+    textColor: '#000000',
+    backgroundColor: '#EFEAD8',
   }),
 
-  // CORRECTION ICI : Enregistrement rigoureux de tous les champs
+  // Enregistrement complet avec la gestion du fond d'écran
   saveToHistory: async () => {
     const state = get();
     
-    const newProject: LabelProject = {
+    const newProject: any = { // Utilisation temporaire de any si ton type LabelProject en base n'a pas encore toutes les clés
       name: state.name,
       subtitle: state.subtitle,
       style: state.style,
-      brewery: state.brewery,       // Ajouté (manquait à l'appel)
+      brewery: state.brewery,      
       abv: state.abv,
       ibu: state.ibu,
       ebc: state.ebc,
       volume: state.volume,
       description: state.description,
       logoText: state.logoText,
-      templateId: state.template,   // FIX : On prend directement le template sélectionné à l'écran
-      bgType: state.bgType,         // Ajouté (manquait à l'appel)
+      templateId: state.templateId,   
+      bgType: state.bgType,         
+      backgroundId: state.backgroundId, // <-- AJOUTÉ : Sauvegarde le fond choisi en BDD
       primaryColor: state.primaryColor,
       textColor: state.textColor,
       backgroundColor: state.backgroundColor,
@@ -133,8 +137,8 @@ export const useLabelStore = create<LabelState>((set, get) => ({
     }
   },
 
-  // CORRECTION ICI : Restauration complète du projet cliqué
-  loadProject: (project) => set({
+  // Restauration complète du projet lors d'un clic dans l'historique
+  loadProject: (project: any) => set({
     name: project.name,
     subtitle: project.subtitle,
     style: project.style,
@@ -145,12 +149,13 @@ export const useLabelStore = create<LabelState>((set, get) => ({
     volume: project.volume,
     description: project.description || '',
     logoText: project.logoText || '',
-    template: project.templateId,   // Synchronise le template visuel
-    templateId: project.templateId, // Synchronise l'ID interne
-    bgType: project.bgType || 'dark-matte',
+    template: project.templateId || 'comic',   
+    templateId: project.templateId || 'comic', 
+    bgType: project.bgType || 'light-flashy',
+    backgroundId: project.backgroundId || 'comic-cream', // <-- AJOUTÉ : Restaure le fond précis
     primaryColor: project.primaryColor || '#D97706',
-    textColor: project.textColor || '#F5F5F0',
-    backgroundColor: project.backgroundColor || '#0B0B0B',
+    textColor: project.textColor || '#000000',
+    backgroundColor: project.backgroundColor || '#EFEAD8',
     activeTab: 'edit' 
   })
 }));

@@ -1,239 +1,180 @@
-import React, { useState } from 'react';
+import React from 'react';
 import { useLabelStore } from '../store/useLabelStore';
-// Ajout de Loader2 et Check pour animer les états du bouton
-import { Sparkles, Type, Hash, RotateCcw, Save, Layers, Loader2, Check } from 'lucide-react';
+import { LABEL_BACKGROUNDS } from './LabelPreview';
 
 export const EditorPanel: React.FC = () => {
-  // On extrait l'état et la fonction directement
   const store = useLabelStore();
-  const { updateLabel, resetLabel, saveToHistory } = store;
-
-  // État local pour gérer l'anti-spam du bouton Sauvegarder
-  const [saveStatus, setSaveStatus] = useState<'idle' | 'saving' | 'saved'>('idle');
-
-  // Fonction sécurisée pour empêcher les clics multiples
-  const handleSave = async () => {
-    if (saveStatus !== 'idle') return;
-
-    setSaveStatus('saving');
-    try {
-      await saveToHistory(); // Attend la sauvegarde réelle dans Dexie DB
-      setSaveStatus('saved');
-      
-      // Revient à l'état initial après 2 secondes
-      setTimeout(() => {
-        setSaveStatus('idle');
-      }, 2000);
-    } catch (error) {
-      console.error("Erreur lors de la sauvegarde :", error);
-      setSaveStatus('idle');
-    }
-  };
-
-  const templates = [
-    { id: 'minimal', name: 'Modern Minimal' },
-    { id: 'punk', name: 'Punk IPA' },
-    { id: 'nordic', name: 'Nordic Brewery' },
-    { id: 'industrial', name: 'Industrial Beer' },
-    { id: 'retro', name: 'Retro Americana' },
-    { id: 'dark', name: 'Black Gold Premium' },
-    { id: 'cyberpunk', name: '⚡ Cyber Neon' },
-    { id: 'wizard', name: '🔮 Grimoire Secret' },
-    { id: 'comic', name: '💥 Pop Cartoon' },
-  ];
-
-  const backgrounds = [
-    { id: 'dark-matte', name: '⬛ Noir Mat Pur' },
-    { id: 'vintage-paper', name: '📜 Papier Craft' },
-    { id: 'jungle', name: '🌿 Jungle Sauvage' },
-    { id: 'psychedelic', name: '🌀 Hypnotique' },
-    { id: 'acid-trip', name: '🌈 Acid Néon' },
-    { id: 'cosmic', name: '🌌 Espace Cosmique' },
-  ];
 
   return (
-    <div className="space-y-7 pb-10">
-      {/* BOUTONS ACTIONS */}
-      <div className="grid grid-cols-2 gap-3">
-        <button
-          onClick={resetLabel}
-          className="flex items-center justify-center gap-2 px-4 py-3 rounded-xl bg-zinc-900/60 hover:bg-zinc-800 text-zinc-400 hover:text-white font-semibold text-xs border border-white/[0.04] transition-all cursor-pointer"
-        >
-          <RotateCcw size={13} />
-          Réinitialiser
-        </button>
-
-        {/* NOUVEAU BOUTON SAUVEGARDER AVEC ÉTATS VISUELS */}
-        <button
-          onClick={handleSave}
-          disabled={saveStatus !== 'idle'}
-          className={`flex items-center justify-center gap-2 px-4 py-3 rounded-xl font-bold text-xs shadow-md transition-all select-none border border-transparent
-            ${saveStatus === 'idle' 
-              ? 'bg-gradient-to-r from-amber-600 to-amber-500 text-zinc-950 hover:brightness-110 cursor-pointer' 
-              : ''}
-            ${saveStatus === 'saving' 
-              ? 'bg-zinc-800 text-zinc-500 border-white/[0.02] cursor-not-allowed' 
-              : ''}
-            ${saveStatus === 'saved' 
-              ? 'bg-gradient-to-r from-emerald-600 to-emerald-500 text-zinc-950 shadow-emerald-950/20' 
-              : ''}
-          `}
-        >
-          {saveStatus === 'idle' && (
-            <>
-              <Save size={13} className="stroke-[2.5]" />
-              <span>Sauvegarder</span>
-            </>
-          )}
-          {saveStatus === 'saving' && (
-            <>
-              <Loader2 size={13} className="animate-spin" />
-              <span>Sauvegarde...</span>
-            </>
-          )}
-          {saveStatus === 'saved' && (
-            <>
-              <Check size={13} className="stroke-[2.5] animate-bounce" />
-              <span>Enregistré !</span>
-            </>
-          )}
-        </button>
+    <div className="w-full max-w-md bg-zinc-900 text-white p-6 rounded-2xl space-y-6 shadow-xl border border-zinc-800 max-h-[85vh] overflow-y-auto custom-scrollbar">
+      
+      <div>
+        <h2 className="text-xl font-black tracking-wide text-amber-500 uppercase">Configuration de l'étiquette</h2>
+        <p className="text-xs text-zinc-400 mt-1">Modifie les valeurs de ton style Pop Cartoon.</p>
       </div>
 
-      {/* SECTION : ARRIÈRE-PLAN */}
-      <div className="space-y-2.5">
-        <div className="flex items-center gap-2 text-zinc-400 font-bold text-[10px] uppercase tracking-widest select-none">
-          <Layers size={11} className="text-amber-500" />
-          <span>1. Arrière-plan de l'étiquette</span>
-        </div>
-        <div className="grid grid-cols-2 gap-2">
-          {backgrounds.map((bg) => (
-            <button
-              key={bg.id}
-              onClick={() => updateLabel({ bgType: bg.id })}
-              className={`px-3 py-2.5 rounded-xl text-left text-xs font-semibold border transition-all cursor-pointer ${
-                store.bgType === bg.id
-                  ? 'bg-zinc-800 text-white border-amber-500/40 shadow-inner ring-1 ring-amber-500/20'
-                  : 'bg-zinc-900/40 text-zinc-400 border-white/[0.02] hover:bg-zinc-900/80 hover:text-zinc-200'
-              }`}
-            >
-              {bg.name}
-            </button>
-          ))}
-        </div>
-      </div>
-
-      {/* SECTION : TEMPLATES */}
-      <div className="space-y-2.5">
-        <div className="flex items-center gap-2 text-zinc-400 font-bold text-[10px] uppercase tracking-widest select-none">
-          <Sparkles size={11} className="text-amber-500" />
-          <span>2. Style Visuel (Template)</span>
-        </div>
-        <div className="grid grid-cols-2 gap-2">
-          {templates.map((tpl) => (
-            <button
-              key={tpl.id}
-              onClick={() => updateLabel({ template: tpl.id })}
-              className={`px-3 py-2.5 rounded-xl text-left text-xs font-semibold border transition-all cursor-pointer ${
-                store.template === tpl.id
-                  ? 'bg-zinc-800 text-white border-amber-500/40 shadow-inner'
-                  : 'bg-zinc-900/40 text-zinc-400 border-white/[0.02] hover:bg-zinc-900/80 hover:text-zinc-200'
-              }`}
-            >
-              {tpl.name}
-            </button>
-          ))}
-        </div>
-      </div>
-
-      {/* SECTION : TEXTES */}
-      <div className="space-y-3.5">
-        <div className="flex items-center gap-2 text-zinc-400 font-bold text-[10px] uppercase tracking-widest select-none">
-          <Type size={11} className="text-amber-500" />
-          <span>3. Textes de l'étiquette</span>
-        </div>
+      {/* --- SECTION 1 : STYLE PAR DÉFAUT & ARRIÈRE-PLAN --- */}
+      <div className="space-y-4 border-t border-zinc-800 pt-4">
+        <h3 className="text-xs font-black uppercase tracking-widest text-zinc-400">1. Identité Visuelle</h3>
         
-        <div className="space-y-3">
-          <div>
-            <label className="block text-[9px] font-bold text-zinc-500 uppercase tracking-wider mb-1">Nom de la bière</label>
-            <input
-              type="text"
-              value={store.name}
-              onChange={(e) => updateLabel({ name: e.target.value })}
-              className="w-full px-4 py-2.5 rounded-xl bg-zinc-900/50 border border-white/[0.05] text-white text-xs font-medium focus:outline-none focus:border-amber-500/40 transition-all"
-            />
-          </div>
+        {/* Style Graphique - Pop Cartoon configuré en tête */}
+        <div className="flex flex-col space-y-1">
+          <label className="text-xs font-bold text-zinc-300 uppercase">Modèle Graphique</label>
+          <select
+            value={store.templateId || 'pop-cartoon'}
+            onChange={(e) => store.updateLabel({ templateId: e.target.value, template: e.target.value })}
+            className="bg-zinc-800 border border-zinc-700 rounded-lg p-2.5 text-sm text-white focus:outline-none focus:border-amber-500 transition"
+          >
+            <option value="pop-cartoon">💥 Pop Cartoon (Style BD Original - Recommandé)</option>
+            <option value="modern-juice">Modern Juice (Style Popihn / Vertical)</option>
+            <option value="classic-editorial">Classic Editorial (Style Épuré)</option>
+            <option value="industrial-block">Industrial Block (Style Typo Block)</option>
+          </select>
+        </div>
 
-          <div>
-            <label className="block text-[9px] font-bold text-zinc-500 uppercase tracking-wider mb-1">Sous-titre / Slogan</label>
-            <input
-              type="text"
-              value={store.subtitle}
-              onChange={(e) => updateLabel({ subtitle: e.target.value })}
-              className="w-full px-4 py-2.5 rounded-xl bg-zinc-900/50 border border-white/[0.05] text-white text-xs font-medium focus:outline-none focus:border-amber-500/40 transition-all"
-            />
-          </div>
-
-          <div className="grid grid-cols-2 gap-3">
-            <div>
-              <label className="block text-[9px] font-bold text-zinc-500 uppercase tracking-wider mb-1">Style de Bière</label>
-              <input
-                type="text"
-                value={store.style}
-                onChange={(e) => updateLabel({ style: e.target.value })}
-                className="w-full px-4 py-2.5 rounded-xl bg-zinc-900/50 border border-white/[0.05] text-white text-xs font-medium focus:outline-none focus:border-amber-500/40 transition-all"
-              />
-            </div>
-            <div>
-              <label className="block text-[9px] font-bold text-zinc-500 uppercase tracking-wider mb-1">Nom Brasserie</label>
-              <input
-                type="text"
-                value={store.brewery}
-                onChange={(e) => updateLabel({ brewery: e.target.value })}
-                className="w-full px-4 py-2.5 rounded-xl bg-zinc-900/50 border border-white/[0.05] text-white text-xs font-medium focus:outline-none focus:border-amber-500/40 transition-all"
-              />
-            </div>
-          </div>
+        {/* Sélection des Couleurs d'impression */}
+        <div className="flex flex-col space-y-1">
+          <label className="text-xs font-bold text-zinc-300 uppercase">Couleur de Fond Fond</label>
+          <select
+            value={store.backgroundId || 'comic-cream'}
+            onChange={(e) => store.updateLabel({ backgroundId: e.target.value })}
+            className="bg-zinc-800 border border-zinc-700 rounded-lg p-2.5 text-sm text-white focus:outline-none focus:border-amber-500 transition"
+          >
+            {LABEL_BACKGROUNDS.map((bg) => (
+              <option key={bg.id} value={bg.id}>
+                {bg.name}
+              </option>
+            ))}
+          </select>
         </div>
       </div>
 
-      {/* SECTION : DONNÉES TECHNIQUES */}
-      <div className="space-y-3.5">
-        <div className="flex items-center gap-2 text-zinc-400 font-bold text-[10px] uppercase tracking-widest select-none">
-          <Hash size={11} className="text-amber-500" />
-          <span>4. Chiffres techniques</span>
+      {/* --- SECTION 2 : CONFIGURATION DES TEXTES --- */}
+      <div className="space-y-4 border-t border-zinc-800 pt-4">
+        <h3 className="text-xs font-black uppercase tracking-widest text-zinc-400">2. Textes Courants</h3>
+
+        {/* Nom de la brasserie */}
+        <div className="flex flex-col space-y-1">
+          <label className="text-xs font-bold text-zinc-300 uppercase">Brasserie (Haut)</label>
+          <input
+            type="text"
+            value={store.brewery}
+            onChange={(e) => store.updateLabel({ brewery: e.target.value })}
+            placeholder="Ex: BRASSERIE DU SOMMET"
+            className="bg-zinc-800 border border-zinc-700 rounded-lg p-2.5 text-sm text-white focus:outline-none focus:border-amber-500 transition uppercase"
+          />
         </div>
 
+        {/* Nom de la bière */}
+        <div className="flex flex-col space-y-1">
+          <label className="text-xs font-bold text-zinc-300 uppercase">Nom de la Bière (Centre)</label>
+          <input
+            type="text"
+            value={store.name}
+            onChange={(e) => store.updateLabel({ name: e.target.value })}
+            placeholder="Ex: HOP HORIZON"
+            className="bg-zinc-800 border border-zinc-700 rounded-lg p-2.5 text-sm text-white focus:outline-none focus:border-amber-500 transition uppercase"
+          />
+        </div>
+
+        {/* Badge Blanc */}
+        <div className="flex flex-col space-y-1">
+          <label className="text-xs font-bold text-zinc-300 uppercase">Slogan / Mention (Badge Blanc)</label>
+          <input
+            type="text"
+            value={store.subtitle}
+            onChange={(e) => store.updateLabel({ subtitle: e.target.value })}
+            placeholder="Ex: DOUBLE IPA ARTISANALE"
+            className="bg-zinc-800 border border-zinc-700 rounded-lg p-2.5 text-sm text-white focus:outline-none focus:border-amber-500 transition uppercase"
+          />
+        </div>
+
+        {/* Badge Orange */}
+        <div className="flex flex-col space-y-1">
+          <label className="text-xs font-bold text-zinc-300 uppercase">Style Spécifique (Badge Orange)</label>
+          <input
+            type="text"
+            value={store.style}
+            onChange={(e) => store.updateLabel({ style: e.target.value })}
+            placeholder="Ex: IMPERIAL IPA"
+            className="bg-zinc-800 border border-zinc-700 rounded-lg p-2.5 text-sm text-white focus:outline-none focus:border-amber-500 transition uppercase"
+          />
+        </div>
+      </div>
+
+      {/* --- SECTION 3 : DONNÉES TECHNIQUES COMPACTES --- */}
+      <div className="space-y-4 border-t border-zinc-800 pt-4">
+        <h3 className="text-xs font-black uppercase tracking-widest text-zinc-400">3. Fiche de Spécifications (Bas)</h3>
+        
         <div className="grid grid-cols-3 gap-2">
-          <div>
-            <label className="block text-[9px] font-bold text-zinc-500 uppercase tracking-wider mb-1">Taux ABV (%)</label>
+          {/* Alcool */}
+          <div className="flex flex-col space-y-1">
+            <label className="text-[10px] font-bold text-zinc-400 uppercase">Alc. (%)</label>
             <input
               type="text"
               value={store.abv}
-              onChange={(e) => updateLabel({ abv: e.target.value })}
-              className="w-full px-2 py-2 rounded-xl bg-zinc-900/50 border border-white/[0.05] text-white text-xs font-bold text-center focus:outline-none focus:border-amber-500/40 transition-all"
+              onChange={(e) => store.updateLabel({ abv: e.target.value })}
+              placeholder="7.5"
+              className="bg-zinc-800 border border-zinc-700 rounded-lg p-2 text-xs text-white focus:outline-none focus:border-amber-500 transition text-center"
             />
           </div>
-          <div>
-            <label className="block text-[9px] font-bold text-zinc-500 uppercase tracking-wider mb-1">Amertume IBU</label>
+
+          {/* IBU */}
+          <div className="flex flex-col space-y-1">
+            <label className="text-[10px] font-bold text-zinc-400 uppercase">IBU</label>
             <input
               type="text"
               value={store.ibu}
-              onChange={(e) => updateLabel({ ibu: e.target.value })}
-              className="w-full px-2 py-2 rounded-xl bg-zinc-900/50 border border-white/[0.05] text-white text-xs font-bold text-center focus:outline-none focus:border-amber-500/40 transition-all"
+              onChange={(e) => store.updateLabel({ ibu: e.target.value })}
+              placeholder="65"
+              className="bg-zinc-800 border border-zinc-700 rounded-lg p-2 text-xs text-white focus:outline-none focus:border-amber-500 transition text-center"
             />
           </div>
-          <div>
-            <label className="block text-[9px] font-bold text-zinc-500 uppercase tracking-wider mb-1">Contenant</label>
+
+          {/* Volume */}
+          <div className="flex flex-col space-y-1">
+            <label className="text-[10px] font-bold text-zinc-400 uppercase">Contenance</label>
             <input
               type="text"
               value={store.volume}
-              onChange={(e) => updateLabel({ volume: e.target.value })}
-              className="w-full px-2 py-2 rounded-xl bg-zinc-900/50 border border-white/[0.05] text-white text-xs font-bold text-center focus:outline-none focus:border-amber-500/40 transition-all"
+              onChange={(e) => store.updateLabel({ volume: e.target.value })}
+              placeholder="33 cl"
+              className="bg-zinc-800 border border-zinc-700 rounded-lg p-2 text-xs text-white focus:outline-none focus:border-amber-500 transition text-center"
             />
           </div>
         </div>
       </div>
+
+      {/* --- DESCRIPTION CRUCIALES POUR LE PRINT --- */}
+      <div className="space-y-4 border-t border-zinc-800 pt-4">
+        <div className="flex flex-col space-y-1">
+          <label className="text-xs font-bold text-zinc-300 uppercase">Notes de Brasseur (Sous l'étiquette)</label>
+          <textarea
+            value={store.description}
+            onChange={(e) => store.updateLabel({ description: e.target.value })}
+            rows={2}
+            placeholder="Une bière explosive houblonnée à cru..."
+            className="bg-zinc-800 border border-zinc-700 rounded-lg p-2.5 text-sm text-white focus:outline-none focus:border-amber-500 transition resize-none text-xs"
+          />
+        </div>
+      </div>
+
+      {/* --- ACTIONS DE SAUVEGARDE --- */}
+      <div className="pt-4 border-t border-zinc-800 flex space-x-3">
+        <button
+          onClick={() => store.resetLabel()}
+          className="flex-1 bg-zinc-800 hover:bg-zinc-700 text-zinc-300 font-bold py-2.5 px-4 rounded-xl text-xs transition"
+        >
+          Reset
+        </button>
+        <button
+          onClick={() => store.saveToHistory()}
+          className="flex-1 bg-amber-500 hover:bg-amber-600 text-black font-black py-2.5 px-4 rounded-xl text-xs transition shadow-lg shadow-amber-500/10"
+        >
+          Enregistrer le modèle
+        </button>
+      </div>
+
     </div>
   );
 };
