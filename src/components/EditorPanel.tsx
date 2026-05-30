@@ -10,14 +10,14 @@ export const EditorPanel: React.FC = () => {
       
       <div>
         <h2 className="text-xl font-black tracking-wide text-amber-500 uppercase">Configuration de l'étiquette</h2>
-        <p className="text-xs text-zinc-400 mt-1">Modifie les valeurs de ton style Pop Cartoon.</p>
+        <p className="text-xs text-zinc-400 mt-1">Modifie les valeurs de tes modèles.</p>
       </div>
 
-      {/* --- SECTION 1 : STYLE PAR DÉFAUT & ARRIÈRE-PLAN --- */}
+      {/* --- SECTION 1 : MODÈLE ET COULEUR --- */}
       <div className="space-y-4 border-t border-zinc-800 pt-4">
         <h3 className="text-xs font-black uppercase tracking-widest text-zinc-400">1. Identité Visuelle</h3>
         
-        {/* Style Graphique - Pop Cartoon configuré en tête */}
+        {/* Menu déroulant mis à jour avec les styles Brewdog */}
         <div className="flex flex-col space-y-1">
           <label className="text-xs font-bold text-zinc-300 uppercase">Modèle Graphique</label>
           <select
@@ -25,16 +25,18 @@ export const EditorPanel: React.FC = () => {
             onChange={(e) => store.updateLabel({ templateId: e.target.value, template: e.target.value })}
             className="bg-zinc-800 border border-zinc-700 rounded-lg p-2.5 text-sm text-white focus:outline-none focus:border-amber-500 transition"
           >
-            <option value="pop-cartoon">💥 Pop Cartoon (Style BD Original - Recommandé)</option>
+            <option value="pop-cartoon">💥 Pop Cartoon (Style BD Original - Par défaut)</option>
+            <option value="brewdog-slashed">🏴‍☠️ Brewdog Slashed (Nouveau - Bloc Oblique)</option>
+            <option value="brewdog-brutalist">🏭 Brewdog Brutalist (Nouveau - Heavy Typo)</option>
             <option value="modern-juice">Modern Juice (Style Popihn / Vertical)</option>
             <option value="classic-editorial">Classic Editorial (Style Épuré)</option>
             <option value="industrial-block">Industrial Block (Style Typo Block)</option>
           </select>
         </div>
 
-        {/* Sélection des Couleurs d'impression */}
+        {/* Sélection des Couleurs */}
         <div className="flex flex-col space-y-1">
-          <label className="text-xs font-bold text-zinc-300 uppercase">Couleur de Fond Fond</label>
+          <label className="text-xs font-bold text-zinc-300 uppercase">Couleur de Fond</label>
           <select
             value={store.backgroundId || 'comic-cream'}
             onChange={(e) => store.updateLabel({ backgroundId: e.target.value })}
@@ -77,9 +79,9 @@ export const EditorPanel: React.FC = () => {
           />
         </div>
 
-        {/* Badge Blanc */}
+        {/* Ligne 1 / Slogan */}
         <div className="flex flex-col space-y-1">
-          <label className="text-xs font-bold text-zinc-300 uppercase">Slogan / Mention (Badge Blanc)</label>
+          <label className="text-xs font-bold text-zinc-300 uppercase">Slogan / Mention (Ligne 1)</label>
           <input
             type="text"
             value={store.subtitle}
@@ -89,9 +91,9 @@ export const EditorPanel: React.FC = () => {
           />
         </div>
 
-        {/* Badge Orange */}
+        {/* Ligne 2 / Style */}
         <div className="flex flex-col space-y-1">
-          <label className="text-xs font-bold text-zinc-300 uppercase">Style Spécifique (Badge Orange)</label>
+          <label className="text-xs font-bold text-zinc-300 uppercase">Style Spécifique (Ligne 2)</label>
           <input
             type="text"
             value={store.style}
@@ -145,7 +147,7 @@ export const EditorPanel: React.FC = () => {
         </div>
       </div>
 
-      {/* --- DESCRIPTION CRUCIALES POUR LE PRINT --- */}
+      {/* --- NOTICES / DESCRIPTIONS --- */}
       <div className="space-y-4 border-t border-zinc-800 pt-4">
         <div className="flex flex-col space-y-1">
           <label className="text-xs font-bold text-zinc-300 uppercase">Notes de Brasseur (Sous l'étiquette)</label>
@@ -153,13 +155,13 @@ export const EditorPanel: React.FC = () => {
             value={store.description}
             onChange={(e) => store.updateLabel({ description: e.target.value })}
             rows={2}
-            placeholder="Une bière explosive houblonnée à cru..."
+            placeholder="Une bière explosive..."
             className="bg-zinc-800 border border-zinc-700 rounded-lg p-2.5 text-sm text-white focus:outline-none focus:border-amber-500 transition resize-none text-xs"
           />
         </div>
       </div>
 
-      {/* --- ACTIONS DE SAUVEGARDE --- */}
+      {/* --- ACTIONS --- */}
       <div className="pt-4 border-t border-zinc-800 flex space-x-3">
         <button
           onClick={() => store.resetLabel()}

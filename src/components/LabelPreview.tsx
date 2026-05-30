@@ -22,28 +22,23 @@ export const LABEL_BACKGROUNDS = [
 ];
 
 // ==========================================
-// STYLE POP CARTOON EXACT (D'APRÈS LA CAPTURE)
+// STYLES TYPOGRAPHIQUES DISPONIBLES
 // ==========================================
+
+// Style 1 (DEFAULT) : Pop Cartoon
 const PopCartoonTemplate: React.FC<{ store: any }> = ({ store }) => (
   <div className="w-full h-full flex flex-col justify-between items-center font-sans text-black">
-    {/* Nom de la brasserie */}
     <div className="text-[11px] font-black uppercase tracking-widest text-[#FF9F00] mt-1 select-none">
       {store.brewery || "BRASSERIE DU SOMMET"}
     </div>
-
-    {/* Titre Principal avec effet détouré BD + Ombre de la capture */}
     <div className="my-1 transform -rotate-1">
       <h1 
         className="text-4xl font-black uppercase tracking-tight text-white select-none whitespace-nowrap"
-        style={{
-          textShadow: '2px 2px 0 #000, -2px -2px 0 #000, 2px -2px 0 #000, -2px 2px 0 #000, 4px 4px 0 #000'
-        }}
+        style={{ textShadow: '2px 2px 0 #000, -2px -2px 0 #000, 2px -2px 0 #000, -2px 2px 0 #000, 4px 4px 0 #000' }}
       >
         {store.name || "HOP HORIZON"}
       </h1>
     </div>
-
-    {/* Badges / Capsules avec ombres portées solides "Pop" */}
     <div className="w-full space-y-2 px-4 mb-2">
       <div className="w-full bg-white text-black font-black uppercase text-[11px] py-1 px-3 border-[2.5px] border-black rounded-xl shadow-[3px_3px_0px_rgba(0,0,0,1)] text-center tracking-wide">
         {store.subtitle || "DOUBLE IPA ARTISANALE"}
@@ -55,6 +50,48 @@ const PopCartoonTemplate: React.FC<{ store: any }> = ({ store }) => (
   </div>
 );
 
+// Style 2 : Brewdog Slashed (CORRIGÉ - Plus de bloc noir vide !)
+const BrewdogSlashedTemplate: React.FC<{ store: any }> = ({ store }) => (
+  <div className="w-full h-full flex items-center justify-between text-left font-sans relative overflow-hidden pr-0">
+    <div className="max-w-[70%] pl-2 flex flex-col justify-center h-full space-y-1 text-black">
+      <span className="text-[10px] font-black uppercase tracking-[0.2em] opacity-80">{store.brewery}</span>
+      <h1 className="text-4xl font-black uppercase tracking-tighter leading-none border-b-4 border-black pb-1">
+        {store.name}
+      </h1>
+      <p className="text-[10px] font-extrabold uppercase opacity-80 pt-1">{store.subtitle}</p>
+    </div>
+    {/* Bloc géométrique avec texte blanc forcé et lisible */}
+    <div className="w-[28%] h-[120%] bg-zinc-950 flex items-center justify-center p-2 transform skew-x-6 translate-x-3 border-l-2 border-black">
+      <span className="transform -skew-x-6 text-center font-black uppercase text-[10px] tracking-[0.2em] text-white [writing-mode:vertical-lr] rotate-180 select-none">
+        {store.style}
+      </span>
+    </div>
+  </div>
+);
+
+// Style 3 : Brewdog Brutalist (CORRIGÉ - Plus de rectangle noir opaque !)
+const BrewdogBrutalistTemplate: React.FC<{ store: any }> = ({ store }) => (
+  <div className="w-full h-full flex flex-col justify-between items-stretch p-1 font-sans text-black">
+    <div className="flex justify-between items-center border-b-2 border-black pb-1">
+      <span className="text-[10px] font-black uppercase tracking-[0.15em]">{store.brewery}</span>
+      <span className="text-[9px] font-mono opacity-50">CRAFT_BEER</span>
+    </div>
+    <div className="my-auto py-1">
+      <h1 className="text-5xl font-black uppercase tracking-tighter leading-[0.85] text-left break-words">
+        {store.name}
+      </h1>
+    </div>
+    <div className="flex justify-between items-end pt-1 border-t-2 border-black">
+      {/* Badge de style au contraste garanti sans effet invert cassé */}
+      <span className="text-[10px] font-black uppercase tracking-wider bg-zinc-950 text-white px-2 py-1 rounded-sm shadow-sm">
+        {store.style}
+      </span>
+      <span className="text-[9px] font-black uppercase tracking-tight opacity-70 mb-0.5">{store.subtitle}</span>
+    </div>
+  </div>
+);
+
+// Style 4 : Modern Juice
 const ModernJuiceTemplate: React.FC<{ store: any }> = ({ store }) => (
   <div className="w-full h-full flex flex-col justify-between items-center text-center p-2">
     <div className="text-[10px] uppercase tracking-[0.2em] font-bold opacity-80">{store.brewery}</div>
@@ -67,6 +104,7 @@ const ModernJuiceTemplate: React.FC<{ store: any }> = ({ store }) => (
   </div>
 );
 
+// Style 5 : Classic Editorial
 const ClassicEditorialTemplate: React.FC<{ store: any }> = ({ store }) => (
   <div className="w-full h-full flex flex-col justify-between items-start text-left p-2 font-serif">
     <div className="text-[9px] font-sans tracking-[0.25em] uppercase opacity-70">{store.brewery}</div>
@@ -78,6 +116,7 @@ const ClassicEditorialTemplate: React.FC<{ store: any }> = ({ store }) => (
   </div>
 );
 
+// Style 6 : Industrial Block
 const IndustrialBlockTemplate: React.FC<{ store: any }> = ({ store }) => (
   <div className="w-full h-full flex flex-col justify-between items-stretch text-left p-2 font-sans">
     <div className="text-[9px] font-black tracking-widest uppercase border-b-2 border-current pb-0.5">{store.brewery}</div>
@@ -99,6 +138,8 @@ export const LabelPreview: React.FC = () => {
   const renderTemplate = () => {
     switch (store.templateId) {
       case 'pop-cartoon': return <PopCartoonTemplate store={store} />;
+      case 'brewdog-slashed': return <BrewdogSlashedTemplate store={store} />;
+      case 'brewdog-brutalist': return <BrewdogBrutalistTemplate store={store} />;
       case 'modern-juice': return <ModernJuiceTemplate store={store} />;
       case 'classic-editorial': return <ClassicEditorialTemplate store={store} />;
       case 'industrial-block': return <IndustrialBlockTemplate store={store} />;
@@ -109,13 +150,13 @@ export const LabelPreview: React.FC = () => {
   return (
     <div className="flex flex-col items-center justify-center space-y-4 p-4 bg-zinc-950 rounded-2xl border border-zinc-800 shadow-2xl w-full max-w-xl">
       
-      {/* 🌟 LE FIX MAGIQUE POUR L'IMPRESSION DES COULEURS DE FOND 🌟 */}
+      {/* IMPRESSION COULEURS FORCÉE ET NETTE */}
       <style>{`
         @media print {
           #label-print-zone, 
           #label-print-zone *, 
-          .bg-white, 
-          .bg-\\[\\#FF9F00\\] {
+          .bg-white,
+          .bg-zinc-950 {
             -webkit-print-color-adjust: exact !important;
             print-color-adjust: exact !important;
           }
@@ -124,10 +165,10 @@ export const LabelPreview: React.FC = () => {
 
       <span className="text-xs font-black text-zinc-500 uppercase tracking-widest">Rendu de Production Haute Fidélité</span>
 
-      {/* CADRE EXTÉRIEUR ET ENVELOPPE DE TAILLE (CONFORME À LA CAPTURE D'ÉCRAN) */}
+      {/* CADRE EXTÉRIEUR ET ENVELOPPE DE TAILLE D'ORIGINE */}
       <div className="bg-[#140d0a] p-4 rounded-[24px] shadow-2xl flex items-center justify-center">
         
-        {/* LE CORPS DE L'ÉTIQUETTE - DIMENSIONS HORIZONTALES EXACTES */}
+        {/* LE CORPS DE L'ÉTIQUETTE - FORMAT PAYSAGE */}
         <div 
           id="label-print-zone"
           className={`w-[440px] h-[300px] border-[3px] rounded-[14px] flex flex-col justify-between p-3 overflow-hidden transition-all duration-300 ${currentBg.className}`}
@@ -137,15 +178,15 @@ export const LabelPreview: React.FC = () => {
             {renderTemplate()}
           </div>
 
-          {/* LIGNE DE SÉPARATION ET FICHE TECHNIQUE (CONFORME À LA CAPTURE D'ÉCRAN) */}
-          <div className="w-full">
-            <div className="border-t-[2px] border-current opacity-90 my-1 w-full" />
+          {/* FICHE TECHNIQUE COMPACTE */}
+          <div className="w-full text-black">
+            <div className="border-t-[2px] border-black opacity-90 my-1 w-full" />
             <div className="grid grid-cols-3 text-center font-mono py-1">
               <div className="flex flex-col">
                 <span className="text-[9px] font-bold tracking-widest opacity-50 uppercase">Alc.</span>
                 <span className="text-sm font-black mt-0.5">{store.abv || "7.5"}%</span>
               </div>
-              <div className="flex flex-col border-x border-current/20">
+              <div className="flex flex-col border-x border-black/20">
                 <span className="text-[9px] font-bold tracking-widest opacity-50 uppercase">Ibu</span>
                 <span className="text-sm font-black mt-0.5">{store.ibu || "65"}</span>
               </div>
