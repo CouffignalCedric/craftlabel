@@ -25,31 +25,36 @@ export const LABEL_BACKGROUNDS = [
 // ==========================================
 
 const PopCartoonTemplate: React.FC<{ store: any }> = ({ store }) => (
-  <div className="w-full h-full flex flex-col justify-between items-center font-sans text-black">
-    <div className="text-[10px] font-black uppercase tracking-widest text-[#FF9F00] mt-1 select-none">
+  <div className="w-full h-full flex flex-col justify-between items-center font-sans text-black pt-1">
+    
+    {/* Nom Brasserie */}
+    <div className="text-[10px] font-black uppercase tracking-widest text-[#f29900] select-none">
       {store.brewery || "BRASSERIE DU SOMMET"}
     </div>
 
-    {/* Titre penché */}
-    <div className="my-1 transform -rotate-10 max-w-full px-2 overflow-hidden">
-      <h1 className="text-3xl font-black uppercase tracking-tight text-white select-none text-center break-words"
-        style={{ textShadow: '2px 2px 0 #000, -2px -2px 0 #000, 2px -2px 0 #000, -2px 2px 0 #000, 3px 3px 0 #000' }}>
+    {/* Titre penché à la "Comic Book" */}
+    <div className="flex flex-col items-center justify-center flex-grow w-full">
+      <h1 
+        className="text-4xl font-black uppercase tracking-tight text-white select-none text-center break-words transform -rotate-[2.5deg] px-2 py-1"
+        style={{ textShadow: '2px 2px 0 #000, -2px -2px 0 #000, 2px -2px 0 #000, -2px 2px 0 #000, 3.5px 3.5px 0 #000' }}
+      >
         {store.name || "HOP HORIZON"}
       </h1>
     </div>
 
-    <div className="w-full space-y-1.5 px-3 mb-1">
-      {/* Badge 1 penché à gauche */}
-      <div className="transform -rotate-1 w-full bg-white text-black font-black uppercase text-[10px] py-1 px-2 border-2 border-black rounded-lg shadow-[3px_3px_0px_rgba(0,0,0,1)] text-center tracking-wide truncate">
+    {/* Badges avec ombres dures brutes */}
+    <div className="w-full space-y-2 px-4 mb-2">
+      <div className="w-full bg-white text-black font-black uppercase text-[11px] py-1.5 px-3 border-[3px] border-black rounded-full shadow-[3px_3px_0px_rgba(0,0,0,1)] text-center tracking-wide truncate">
         {store.subtitle || "DOUBLE IPA ARTISANALE"}
       </div>
-      {/* Badge 2 penché à droite */}
-      <div className="transform rotate-1 w-full bg-[#FF9F00] text-black font-black uppercase text-[10px] py-1 px-2 border-2 border-black rounded-lg shadow-[3px_3px_0px_rgba(0,0,0,1)] text-center tracking-wide truncate">
+      <div className="w-full bg-[#f29900] text-black font-black uppercase text-[11px] py-1.5 px-3 border-[3px] border-black rounded-full shadow-[3px_3px_0px_rgba(0,0,0,1)] text-center tracking-wide truncate">
         {store.style || "IMPERIAL IPA"}
       </div>
     </div>
+
   </div>
 );
+
 const BrewdogSlashedTemplate: React.FC<{ store: any }> = ({ store }) => (
   <div className="w-full h-full flex items-center justify-between text-left font-sans relative overflow-hidden text-black">
     <div className="max-w-[70%] pl-2 flex flex-col justify-center h-full space-y-1">
@@ -142,32 +147,40 @@ export const LabelPreview: React.FC<LabelPreviewProps> = ({ scale = 1 }) => {
   };
 
   return (
+    /* LE FIX ANTI-DÉCALAGE EST ICI : Le parent réserve uniquement l'espace final post-scale */
     <div 
-      id="label-print-zone"
-      /* FIX : "bg-white" a été retiré ici pour laisser s'exprimer la classe dynamique du store */
-      className={`w-[400px] h-[270px] border-[3.5px] border-black rounded-xl flex flex-col justify-between p-3 overflow-hidden box-border select-none ${currentBg.className}`}
-      style={{ transform: scale !== 1 ? `scale(${scale})` : undefined, transformOrigin: 'center' }}
+      className="relative transition-all duration-300 mx-auto"
+      style={{ width: 400 * scale, height: 270 * scale }}
     >
-      {/* Zone de contenu principale */}
-      <div className="flex-1 w-full overflow-hidden relative">
-        {renderTemplate()}
-      </div>
+      <div 
+        id="label-print-zone"
+        className={`absolute top-0 left-0 w-[400px] h-[270px] border-[5px] border-black rounded-xl flex flex-col justify-between p-3 overflow-hidden box-border select-none ${currentBg.className}`}
+        style={{ 
+          transform: `scale(${scale})`, 
+          transformOrigin: 'top left' /* Obligatoire pour coller au coin en haut à gauche du nouveau parent */
+        }}
+      >
+        {/* Zone de contenu principale (Le template choisi) */}
+        <div className="flex-1 w-full overflow-hidden relative">
+          {renderTemplate()}
+        </div>
 
-      {/* Fiche technique compacte */}
-      <div className="w-full mt-1">
-        <div className="border-t-2 border-black opacity-30 my-1 w-full" />
-        <div className="grid grid-cols-3 text-center font-mono w-full">
-          <div className="flex flex-col justify-center items-center">
-            <span className="text-[8px] font-bold tracking-wider opacity-60 uppercase">Alc.</span>
-            <span className="text-xs font-black mt-0.5 whitespace-nowrap">{store.abv || "7.5"}%</span>
-          </div>
-          <div className="flex flex-col justify-center items-center border-x border-black/20">
-            <span className="text-[8px] font-bold tracking-wider opacity-60 uppercase">Ibu</span>
-            <span className="text-xs font-black mt-0.5 whitespace-nowrap">{store.ibu || "65"}</span>
-          </div>
-          <div className="flex flex-col justify-center items-center">
-            <span className="text-[8px] font-bold tracking-wider opacity-60 uppercase">Vol.</span>
-            <span className="text-xs font-black mt-0.5 whitespace-nowrap">{store.volume || "33 cl"}</span>
+        {/* Fiche technique compacte globale (Reste bien droite en bas) */}
+        <div className="w-full mt-2">
+          <div className="border-t-[3px] border-black my-1 w-full" />
+          <div className="grid grid-cols-3 text-center font-sans w-full pt-1">
+            <div className="flex flex-col justify-center items-center">
+              <span className="text-[9px] font-bold tracking-wider uppercase text-zinc-800">Alc.</span>
+              <span className="text-sm font-black mt-0.5 whitespace-nowrap">{store.abv || "7.5"}%</span>
+            </div>
+            <div className="flex flex-col justify-center items-center border-x-[3px] border-black">
+              <span className="text-[9px] font-bold tracking-wider uppercase text-zinc-800">Ibu</span>
+              <span className="text-sm font-black mt-0.5 whitespace-nowrap">{store.ibu || "65"}</span>
+            </div>
+            <div className="flex flex-col justify-center items-center">
+              <span className="text-[9px] font-bold tracking-wider uppercase text-zinc-800">Vol.</span>
+              <span className="text-sm font-black mt-0.5 whitespace-nowrap">{store.volume || "33 cl"}</span>
+            </div>
           </div>
         </div>
       </div>
