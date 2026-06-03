@@ -32,7 +32,7 @@ const PopCartoonTemplate: React.FC<{ store: any; isDark: boolean }> = ({ store, 
 
     <div className="flex flex-col items-center justify-center flex-grow w-full">
       <h1 
-        className="text-3xl font-black uppercase tracking-tight text-white select-none text-center break-words transform -rotate-[2.5deg] px-2 py-1"
+        className="text-3xl font-black uppercase tracking-tight text-white select-none text-center break-words transform -rotate-[5deg] px-2 py-1"
         style={{ textShadow: '2px 2px 0 #000, -2px -2px 0 #000, 2px -2px 0 #000, -2px 2px 0 #000, 3.5px 3.5px 0 #000' }}
       >
         {store.name || "HOP HORIZON"}
@@ -40,10 +40,10 @@ const PopCartoonTemplate: React.FC<{ store: any; isDark: boolean }> = ({ store, 
     </div>
 
     <div className="w-full space-y-1.5 px-3 mb-1">
-      <div className={`w-full font-black uppercase text-[10px] py-1 px-2 border-2 rounded-lg text-center tracking-wide truncate ${isDark ? 'bg-zinc-800 text-white border-white shadow-[3px_3px_0px_rgba(255,255,255,1)]' : 'bg-white text-black border-black shadow-[3px_3px_0px_rgba(0,0,0,1)]'}`}>
+      <div className={`w-full font-black uppercase text-[10px] py-1 px-2 border-2 rounded-lg text-center transform -rotate-[-1.5deg] tracking-wide truncate ${isDark ? 'bg-zinc-800 text-white border-white shadow-[3px_3px_0px_rgba(255,255,255,1)]' : 'bg-white text-black border-black shadow-[3px_3px_0px_rgba(0,0,0,1)]'}`}>
         {store.subtitle || "DOUBLE IPA ARTISANALE"}
       </div>
-      <div className={`w-full font-black uppercase text-[10px] py-1 px-2 border-2 rounded-lg text-center tracking-wide truncate ${isDark ? 'bg-amber-500 text-black border-white shadow-[3px_3px_0px_rgba(255,255,255,1)]' : 'bg-[#f29900] text-black border-black shadow-[3px_3px_0px_rgba(0,0,0,1)]'}`}>
+      <div className={`w-full font-black uppercase text-[10px] py-1 px-2 border-2 rounded-lg text-center transform -rotate-[1.5deg] tracking-wide truncate ${isDark ? 'bg-amber-500 text-black border-white shadow-[3px_3px_0px_rgba(255,255,255,1)]' : 'bg-[#f29900] text-black border-black shadow-[3px_3px_0px_rgba(0,0,0,1)]'}`}>
         {store.style || "IMPERIAL IPA"}
       </div>
     </div>
