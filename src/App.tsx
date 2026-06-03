@@ -7,7 +7,8 @@ import { HistoryPanel } from './components/HistoryPanel';
 import { PrintView } from './components/PrintView';
 
 const App: React.FC = () => {
-  const { activeTab, bgType } = useLabelStore();
+  // 🔑 On extrait 'setActiveTab' du store pour pouvoir changer d'onglet au retour
+  const { activeTab, bgType, setActiveTab } = useLabelStore();
 
   // UX Ambiance : La lueur s'adapte à la texture de l'étiquette sélectionnée
   const getDynamicGlow = () => {
@@ -26,8 +27,9 @@ const App: React.FC = () => {
   };
 
   // CIRCUIT COURT : Mode impression direct
+  // 🏁 On passe la fonction onClose qui bascule l'onglet du store sur 'edit'
   if (activeTab === 'print') {
-    return <PrintView />;
+    return <PrintView onClose={() => setActiveTab('edit')} />;
   }
 
   return (
@@ -50,18 +52,18 @@ const App: React.FC = () => {
            <div className="absolute bottom-4 right-4 text-[9px] font-mono text-zinc-700 select-none tracking-widest hidden sm:block">GRID_ACTIVE</div>
 
            <div className="relative transform scale-100 md:scale-105 lg:scale-120 transition-transform duration-300 w-full flex justify-center">
-              {/* Lueurs floues adaptatives */}
-              <div className="absolute -inset-10 bg-black/40 rounded-full blur-3xl pointer-events-none"></div>
-              <div className={`absolute -inset-4 bg-gradient-to-br ${getDynamicGlow()} rounded-full blur-2xl opacity-80 transition-all duration-700 pointer-events-none`}></div>
-              
-              {/* Le cadre de l'étiquette */}
-              <div className={`relative p-1.5 rounded-xl shadow-[0_30px_70px_-15px_rgba(0,0,0,0.9)] border transition-all duration-500 w-full max-w-xs sm:max-w-none ${
-                bgType === 'vintage-paper' 
-                  ? 'bg-amber-950/20 border-amber-800/20' 
-                  : 'bg-zinc-900/90 border-white/10 ring-1 ring-black/50'
-              }`}>
-                <LabelPreview />
-              </div>
+             {/* Lueurs floues adaptatives */}
+             <div className="absolute -inset-10 bg-black/40 rounded-full blur-3xl pointer-events-none"></div>
+             <div className={`absolute -inset-4 bg-gradient-to-br ${getDynamicGlow()} rounded-full blur-2xl opacity-80 transition-all duration-700 pointer-events-none`}></div>
+             
+             {/* Le cadre de l'étiquette */}
+             <div className={`relative p-1.5 rounded-xl shadow-[0_30px_70px_-15px_rgba(0,0,0,0.9)] border transition-all duration-500 w-full max-w-xs sm:max-w-none ${
+               bgType === 'vintage-paper' 
+                 ? 'bg-amber-950/20 border-amber-800/20' 
+                 : 'bg-zinc-900/90 border-white/10 ring-1 ring-black/50'
+             }`}>
+               <LabelPreview />
+             </div>
            </div>
 
            <p className="text-center text-[9px] text-zinc-600 font-bold uppercase tracking-[0.35em] mt-4 lg:mt-12 select-none hidden sm:block">

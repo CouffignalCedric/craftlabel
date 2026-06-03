@@ -17,7 +17,7 @@ export const EditorPanel: React.FC = () => {
       <div className="space-y-4 border-t border-zinc-800 pt-4">
         <h3 className="text-xs font-black uppercase tracking-widest text-zinc-400">1. Identité Visuelle</h3>
         
-        {/* Menu déroulant mis à jour avec les styles Brewdog */}
+        {/* Menu déroulant mis à jour avec les 5 nouveaux modèles */}
         <div className="flex flex-col space-y-1">
           <label className="text-xs font-bold text-zinc-300 uppercase">Modèle Graphique</label>
           <select
@@ -25,12 +25,20 @@ export const EditorPanel: React.FC = () => {
             onChange={(e) => store.updateLabel({ templateId: e.target.value, template: e.target.value })}
             className="bg-zinc-800 border border-zinc-700 rounded-lg p-2.5 text-sm text-white focus:outline-none focus:border-amber-500 transition"
           >
+            {/* Modèles existants */}
             <option value="pop-cartoon">💥 Pop Cartoon (Style BD Original - Par défaut)</option>
-            <option value="brewdog-slashed">🏴‍☠️ Brewdog Slashed (Nouveau - Bloc Oblique)</option>
-            <option value="brewdog-brutalist">🏭 Brewdog Brutalist (Nouveau - Heavy Typo)</option>
+            <option value="brewdog-slashed">🏴‍☠️ Brewdog Slashed (Bloc Oblique)</option>
+            <option value="brewdog-brutalist">🏭 Brewdog Brutalist (Heavy Typo)</option>
             <option value="modern-juice">Modern Juice (Style Popihn / Vertical)</option>
             <option value="classic-editorial">Classic Editorial (Style Épuré)</option>
             <option value="industrial-block">Industrial Block (Style Typo Block)</option>
+
+            {/* 5 Nouveaux modèles ajoutés */}
+            <option value="apothecary-vintage">🌿 Apothecary (Vieux Remède / Style Grimoire & Gravures)</option>
+            <option value="cyber-synthwave">⚡ Cyber Synthwave (Ambiance Néon / Futuriste 80s)</option>
+            <option value="art-nouveau">🎨 Art Nouveau (Volutes Élégantes & Courbes Organiques)</option>
+            <option value="minimal-luxury">✨ Minimal Luxury (Épuré Chic / Style Haute Couture)</option>
+            <option value="pixel-arcade">👾 Pixel Arcade (Style 8-bit / Univers Retro Gaming)</option>
           </select>
         </div>
 
@@ -62,7 +70,7 @@ export const EditorPanel: React.FC = () => {
             type="text"
             value={store.brewery}
             onChange={(e) => store.updateLabel({ brewery: e.target.value })}
-            placeholder="Ex: BRASSERIE DU SOMMET"
+            placeholder="Ex: MA CRAFT BRASSERIE"
             className="bg-zinc-800 border border-zinc-700 rounded-lg p-2.5 text-sm text-white focus:outline-none focus:border-amber-500 transition uppercase"
           />
         </div>
@@ -144,20 +152,6 @@ export const EditorPanel: React.FC = () => {
               className="bg-zinc-800 border border-zinc-700 rounded-lg p-2 text-xs text-white focus:outline-none focus:border-amber-500 transition text-center"
             />
           </div>
-        </div>
-      </div>
-
-      {/* --- NOTICES / DESCRIPTIONS --- */}
-      <div className="space-y-4 border-t border-zinc-800 pt-4">
-        <div className="flex flex-col space-y-1">
-          <label className="text-xs font-bold text-zinc-300 uppercase">Notes de Brasseur (Sous l'étiquette)</label>
-          <textarea
-            value={store.description}
-            onChange={(e) => store.updateLabel({ description: e.target.value })}
-            rows={2}
-            placeholder="Une bière explosive..."
-            className="bg-zinc-800 border border-zinc-700 rounded-lg p-2.5 text-sm text-white focus:outline-none focus:border-amber-500 transition resize-none text-xs"
-          />
         </div>
       </div>
 

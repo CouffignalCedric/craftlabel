@@ -2,7 +2,11 @@ import React, { useEffect } from 'react';
 import { createPortal } from 'react-dom';
 import { LabelPreview } from './LabelPreview';
 
-export const PrintView: React.FC = () => {
+interface PrintViewProps {
+  onClose: () => void; // Fonction indispensable appelée pour fermer la vue
+}
+
+export const PrintView: React.FC<PrintViewProps> = ({ onClose }) => {
   useEffect(() => {
     const timer = setTimeout(() => {
       window.print();
@@ -10,22 +14,26 @@ export const PrintView: React.FC = () => {
     return () => clearTimeout(timer);
   }, []);
 
+  const handleBack = (e: React.MouseEvent | React.TouchEvent) => {
+    e.preventDefault();
+    e.stopPropagation();
+    onClose();
+  };
+
   const printContent = (
-    <div className="fixed inset-0 z-[999999] bg-zinc-950 overflow-y-auto p-4 print:absolute print:inset-auto print:top-0 print:left-0 print:w-[210mm] print:h-[297mm] print:p-[12mm_10mm] print:bg-white print:overflow-visible">
+    <div className="fixed inset-0 z-[999999] bg-zinc-950 overflow-y-auto print:absolute print:inset-auto print:top-0 print:left-0 print:w-[210mm] print:h-[297mm] print:p-[12mm_10mm] print:bg-white print:overflow-visible">
       
       <style>{`
         @page { 
           size: A4 portrait; 
-          margin: 0mm !important; /* Pilotage des marges millimètre par millimètre en CSS */
+          margin: 0mm !important; 
         }
         
         @media print {
-          /* 1. ON DISSOUT LE RESTE DU SITE (Zéro conflit de hauteur, zéro page blanche) */
-          #root, [data-v-app], .app-layout-container {
+          #root, [data-v-app], .app-layout-container, .no-print {
             display: none !important;
           }
 
-          /* 2. NETTOYAGE DU DOCUMENT PARENT */
           html, body {
             background: white !important;
             height: auto !important;
@@ -35,7 +43,6 @@ export const PrintView: React.FC = () => {
             padding: 0 !important;
           }
 
-          /* 3. FORÇAGE DES COULEURS D'ARRIÈRE-PLAN (Garantit les blocs orange/cyan) */
           * { 
             -webkit-print-color-adjust: exact !important; 
             print-color-adjust: exact !important; 
@@ -43,29 +50,34 @@ export const PrintView: React.FC = () => {
         }
       `}</style>
 
-      {/* Interface Écran (Masquée automatiquement sur le papier grâce à 'no-print') */}
-      <div className="no-print mb-6 p-4 bg-zinc-900 text-white flex justify-between items-center rounded-2xl max-w-2xl mx-auto shadow-xl mt-4">
-        <div className="flex flex-col">
-          <span className="text-sm font-bold">🖨️ Mode Impression Isolé (Technique du Portail)</span>
-          <span className="text-xs text-zinc-400">Parfaitement protégé contre les effets de bords et les contraintes du site web.</span>
-        </div>
+      {/* 🛠️ BARRE DE NAVIGATION ÉCRAN (Sécurisée à 100% pour le clic et le tactile iPhone) */}
+      <div className="no-print sticky top-0 z-[1000000] bg-zinc-900/95 backdrop-blur border-b border-zinc-800 px-4 py-3 flex justify-between items-center w-full shadow-lg select-none">
+        <button 
+          onClick={handleBack}
+          onTouchEnd={handleBack}
+          className="flex items-center gap-2 text-zinc-300 hover:text-white bg-zinc-800 hover:bg-zinc-700 active:bg-zinc-600 px-4 py-2 rounded-xl text-sm font-bold cursor-pointer transition-colors tap-highlight-transparent"
+          style={{ WebkitTapHighlightColor: 'transparent' }}
+        >
+          ← Retour à l'éditeur
+        </button>
+        
         <button 
           onClick={() => window.print()} 
-          className="bg-emerald-600 hover:bg-emerald-700 px-4 py-2 rounded-xl text-xs font-black cursor-pointer transition-colors"
+          onTouchEnd={(e) => { e.preventDefault(); window.print(); }}
+          className="bg-emerald-600 hover:bg-emerald-700 active:bg-emerald-500 text-white px-5 py-2 rounded-xl text-sm font-black cursor-pointer shadow-md transition-colors tap-highlight-transparent"
+          style={{ WebkitTapHighlightColor: 'transparent' }}
         >
-          Relancer l'impression
+          Imprimer
         </button>
       </div>
 
       {/* 🏁 LA GRILLE A4 IMMUNISÉE */}
-      <div className="mx-auto grid grid-cols-1 sm:grid-cols-2 gap-4 bg-transparent max-w-[190mm] print:max-w-none print:grid print:grid-cols-2 print:gap-[6mm_4mm]">
+      <div className="mx-auto mt-6 grid grid-cols-1 sm:grid-cols-2 gap-4 bg-transparent max-w-[190mm] p-4 print:p-0 print:mt-0 print:max-w-none print:grid print:grid-cols-2 print:gap-[6mm_4mm]">
         {[...Array(6)].map((_, index) => (
           <div 
             key={index} 
-            className="w-full aspect-[95/70] max-w-[95mm] h-[70mm] bg-zinc-900/20 rounded-xl flex items-center justify-center overflow-hidden print:bg-transparent print:rounded-none print:w-[95mm] print:h-[70mm] print:break-inside-avoid"
+            className="w-full aspect-[95/70] max-w-[95mm] h-[70mm] bg-zinc-900/20 rounded-xl flex items-center justify-center overflow-hidden mx-auto print:bg-transparent print:rounded-none print:w-[95mm] print:h-[70mm] print:break-inside-avoid"
           >
-            {/* L'échelle à 0.90 est appliquée via une DIV parente en CSS pur. 
-                Cela évite le crash de compilation TypeScript sur la prop "scale" vu sur l'image_583768.png */}
             <div className="transform scale-100 print:scale-[0.90] origin-center">
               <LabelPreview />
             </div>
@@ -75,6 +87,5 @@ export const PrintView: React.FC = () => {
     </div>
   );
 
-  // Au lieu de retourner le HTML dans le flux normal, on le parachute directement sur le document.body
   return createPortal(printContent, document.body);
 };

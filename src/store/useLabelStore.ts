@@ -42,12 +42,12 @@ export const useLabelStore = create<LabelState>((set, get) => ({
   setActiveTab: (tab) => set({ activeTab: tab }),
 
   // Valeurs par défaut (Ajustées sur ton style favori !)
-  name: 'Hop Horizon',
+  name: 'NOM DE LA BIÈRE',
   subtitle: 'Double IPA Artisanale',
   style: 'Imperial IPA',
-  brewery: 'Brasserie du Sommet',
-  abv: '7.5',
-  ibu: '65',
+  brewery: 'MA CRAFT BRASSERIE', // <-- FIX : Valeur par défaut plus générique
+  abv: '5.5',
+  ibu: '##',
   ebc: '15',
   volume: '33 cl',
   description: 'Une bière artisanale explosive en saveurs et en amertume.',
