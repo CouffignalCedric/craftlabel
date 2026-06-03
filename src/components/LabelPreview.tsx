@@ -135,7 +135,7 @@ const ApothecaryVintageTemplate: React.FC<{ store: any; isDark: boolean }> = ({ 
       <h2 className="text-2xl font-bold uppercase tracking-wide my-0.5 leading-none px-2 break-words">
         {store.name || "VIEUX REMÈDE"}
       </h2>
-      <div className={`w-12 h-[1px] mx-auto my-1 ${isDark ? 'bg-white/40' : 'bg-black/40'}`} />
+      <div className={`w-12 h-[1px] mx-auto my-1 ${isDark ? 'bg-white/40' : 'bg-black/40'}`}px-4 />
       <p className="text-[9px] italic opacity-80 inline-block px-4 truncate max-w-full">
         {store.subtitle || "TRADITION BRASSICOLE"}
       </p>
@@ -147,8 +147,8 @@ const ApothecaryVintageTemplate: React.FC<{ store: any; isDark: boolean }> = ({ 
   </div>
 );
 
-// 🆕 NOUVEAU 8 : CYBER SYNTHWAVE
-const CyberSynthwaveTemplate: React.FC<{ store: any; isDark: boolean }> = ({ store, isDark }) => (
+// 🆕 NOUVEAU 8 : CYBER SYNTHWAVE (isDark retiré car inutilisé)
+const CyberSynthwaveTemplate: React.FC<{ store: any; isDark: boolean }> = ({ store }) => (
   <div className="w-full h-full p-3 flex flex-col justify-between bg-zinc-950 font-mono text-cyan-400 border-2 border-fuchsia-500 shadow-[inset_0_0_12px_rgba(244,63,94,0.3)] relative overflow-hidden rounded-md">
     <div className="absolute bottom-0 inset-x-0 h-10 bg-[linear-gradient(to_bottom,transparent_40%,rgba(244,63,94,0.15)_100%)] pointer-events-none"></div>
     <div className="flex justify-between items-center text-[8px] uppercase tracking-wider border-b border-cyan-500/30 pb-1">
@@ -214,8 +214,8 @@ const MinimalLuxuryTemplate: React.FC<{ store: any; isDark: boolean }> = ({ stor
   </div>
 );
 
-// 🆕 NOUVEAU 11 : PIXEL ARCADE
-const PixelArcadeTemplate: React.FC<{ store: any; isDark: boolean }> = ({ store, isDark }) => (
+// 🆕 NOUVEAU 11 : PIXEL ARCADE (isDark retiré car inutilisé)
+const PixelArcadeTemplate: React.FC<{ store: any; isDark: boolean }> = ({ store }) => (
   <div className="w-full h-full p-2 flex flex-col justify-between bg-black text-lime-400 font-mono border-4 border-dashed border-lime-400 relative rounded-md">
     <div className="text-[8px] tracking-tight uppercase bg-lime-400 text-black px-1 font-bold w-max self-center select-none">
       {store.brewery || "8BIT BREW"}
